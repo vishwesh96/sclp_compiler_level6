@@ -47,6 +47,7 @@
 
 %type <symbol_table> optional_variable_declaration_list
 %type <symbol_table> variable_declaration_list
+%type <symbol_table> procedure_declaration_list
 %type <symbol_entry_list> variable_declaration
 // %type <decl> declaration
 %type <vtype> variable_type
@@ -144,7 +145,7 @@ procedure_declaration_list:
 ;
 
 procedure_declaration:
-	VOID NAME '(' ')' ';'
+	return_data_type NAME '(' optional_argument_list ')' ';'
 	{
 	if (NOT_ONLY_PARSE)
 	{
@@ -155,7 +156,7 @@ procedure_declaration:
 ;
 
 procedure_definition:
-	NAME '(' ')'
+	NAME '(' optional_argument_list ')'
 	{
 	if (NOT_ONLY_PARSE)
 	{
@@ -187,7 +188,7 @@ procedure_definition:
 	}
 	}
 
-	statement_list '}'
+	statement_list return_statement '}'
 	{
 	if (NOT_ONLY_PARSE)
 	{
@@ -465,13 +466,39 @@ statement :
 		$$ = $1;
 	}
 	}
-
+|
+	return_statement
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = $1;
+	}
+	}
 |
 	'{' statement_list '}'
 	{
 	if(NOT_ONLY_PARSE)
 	{
 		$$ = $2;
+	}
+	}
+;
+
+
+return_statement :
+	RETURN ';' 
+	{
+	if (NOT_ONLY_PARSE)
+	{
+
+	}
+	}
+|
+	RETURN arith_expressionfar';' 
+	{
+	if (NOT_ONLY_PARSE)
+	{
+
 	}
 	}
 ;
@@ -929,6 +956,75 @@ constant:
 		double number = $1; 
 		Ast * num_ast  = new Number_Ast<double>(number,double_data_type,get_line_number());
 		$$ = num_ast;
+	}
+	}
+;
+
+return_data_type:
+	INTEGER
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = int_data_type;
+	}
+	}
+|
+	FLOAT
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = double_data_type;
+	}
+	}
+| 
+	VOID
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = void_data_type;
+	}
+	}
+;
+
+optional_argument_list:
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = NULL;
+	}
+	}
+|
+	argument_declaration_list
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = $1;
+	}
+	}
+;
+
+argument_declaration:
+	variable_type NAME
+	{
+	if(NOT_ONLY_PARSE)
+	{
+	}
+	}
+;
+
+argument_declaration_list:
+	argument_declaration
+	{
+	if(NOT_ONLY_PARSE)
+	{
+	}
+	}
+|
+	argument_declaration_list ',' argument_declaration
+	{
+	if(NOT_ONLY_PARSE)
+	{
+
 	}
 	}
 ;

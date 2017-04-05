@@ -270,6 +270,11 @@ public:
 	Code_For_Ast & compile();
 };
 
+class Return_Ast : public Ast
+{
+	
+};
+
 class Sequence_Ast: public Ast{
 	list<Ast *> statement_list;
 	list<Icode_Stmt *> sa_icode_list;

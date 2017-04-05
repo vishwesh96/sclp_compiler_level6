@@ -1,8 +1,8 @@
 
 	.data
+prev_number:	.word 0
 i:	.word 0
 size:	.word 0
-prev_number:	.word 0
 number:	.word 0
 
 	.text 			# The .text assembler directive indicates
