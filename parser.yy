@@ -73,7 +73,7 @@
 %%
 
 program:
-	declaration_list procedure_definition
+	declaration_list procedure_definition_list
 	{
 	if (NOT_ONLY_PARSE)
 	{
@@ -86,7 +86,7 @@ program:
 ;
 
 declaration_list:
-	procedure_declaration
+	procedure_declaration_list
 	{
 	if (NOT_ONLY_PARSE)
 	{
@@ -97,7 +97,7 @@ declaration_list:
 	}
 |
 	variable_declaration_list
-	procedure_declaration
+	procedure_declaration_list
 	{
 	if (NOT_ONLY_PARSE)
 	{
@@ -110,7 +110,7 @@ declaration_list:
 	}
 	}
 |
-	procedure_declaration
+	procedure_declaration_list
 	variable_declaration_list
 	{
 	if (NOT_ONLY_PARSE)
@@ -121,6 +121,24 @@ declaration_list:
 		CHECK_INVARIANT((global_table != NULL), "Global declarations cannot be null");
 
 		program_object.set_global_table(*global_table);
+	}
+	}
+;
+
+procedure_declaration_list:
+	procedure_declaration
+	{
+	if(NOT_ONLY_PARSE)
+	{
+
+	}
+	}
+|
+	procedure_declaration_list procedure_declaration
+	{
+	if(NOT_ONLY_PARSE)
+	{
+
 	}
 	}
 ;
