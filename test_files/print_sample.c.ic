@@ -1,0 +1,244 @@
+  Procedure: f1
+  Intermediate Code Statements
+	iLoad:    	v0 <- 2
+	move:    	v1 <- v0
+	return
+  Procedure: f2
+  Intermediate Code Statements
+	iLoad:    	v0 <- 2000
+	move:    	v1 <- v0
+	return
+  Procedure: f3
+  Intermediate Code Statements
+	iLoad:    	v0 <- 3
+	move:    	v1 <- v0
+	return
+  Procedure: main
+  Intermediate Code Statements
+	call f1
+	move:    	v0 <- v1
+	store:    	a <- v0
+	call f2
+	move:    	v0 <- v1
+	store:    	b <- v0
+	call f3
+	move:    	v0 <- v1
+	store:    	c <- v0
+	iLoad.d:    	f2 <- 20.22
+	store.d:    	d <- f2
+	load:    	v0 <- a
+	load:    	t0 <- b
+	add:    	t1 <- v0 , t0
+	store:    	global_variable <- t1
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	loadAdd:    	a0 <- string0
+	iLoad:    	v0 <- 4
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- a
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	move:    	a0 <- v0
+	iLoad:    	v0 <- 1
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	loadAdd:    	a0 <- string1
+	iLoad:    	v0 <- 4
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- b
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	move:    	a0 <- v0
+	iLoad:    	v0 <- 1
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	loadAdd:    	a0 <- string2
+	iLoad:    	v0 <- 4
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- c
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	move:    	a0 <- v0
+	iLoad:    	v0 <- 1
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	loadAdd:    	a0 <- string3
+	iLoad:    	v0 <- 4
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	load.d:    	f2 <- d
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	move.d:    	f12 <- f2
+	iLoad:    	v0 <- 3
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	loadAdd:    	a0 <- string4
+	iLoad:    	v0 <- 4
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- global_variable
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	move:    	a0 <- v0
+	iLoad:    	v0 <- 1
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	addi:    	sp <- sp , -4
+	store:    	sp <- v0
+	addi:    	sp <- sp , -4
+	store:    	sp <- a0
+	addi:    	sp <- sp , -8
+	store.d:    	sp <- f12
+	loadAdd:    	a0 <- string5
+	iLoad:    	v0 <- 4
+	syscall 
+	load.d:    	f12 <- sp
+	addi:    	sp <- sp , 8
+	load:    	a0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- sp
+	addi:    	sp <- sp , 4
+	load:    	v0 <- a
+	iLoad:    	t0 <- 1
+	seq:    	t1 <- v0 , t0
+	beq:    	t1 , zero : goto label4
+	iLoad:    	v0 <- 0
+	move:    	v1 <- v0
+	return
+	goto label5
+
+label4:    	
+	load:    	v0 <- b
+	iLoad:    	t0 <- 1
+	seq:    	t2 <- v0 , t0
+	beq:    	t2 , zero : goto label2
+	iLoad:    	v0 <- 1
+	move:    	v1 <- v0
+	return
+	goto label3
+
+label2:    	
+	load:    	v0 <- c
+	iLoad:    	t0 <- 1
+	seq:    	t3 <- v0 , t0
+	beq:    	t3 , zero : goto label0
+	iLoad:    	v0 <- 2
+	move:    	v1 <- v0
+	return
+	goto label1
+
+label0:    	
+	iLoad:    	v0 <- 3
+	move:    	v1 <- v0
+	return
+
+label1:    	
+
+label3:    	
+
+label5:    	
+	iLoad:    	v0 <- 0
+	move:    	v1 <- v0
+	return

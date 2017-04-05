@@ -19,12 +19,16 @@ class Procedure
 	string name;
 	Symbol_Table local_symbol_table;
 	Sequence_Ast * sequence_ast;
-
+	Symbol_Table param_symbol_table;
 	int lineno;
 
 public:
 	Procedure(Data_Type proc_return_type, string proc_name, int line);
 	~Procedure();
+
+	void check_param_table(Symbol_Table & table);
+	void set_param_list(Symbol_Table & new_list);
+	bool variable_in_param_list_check(string variable);
 
 	string get_proc_name();
   	void set_sequence_ast(Sequence_Ast & sa);
