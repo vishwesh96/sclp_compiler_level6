@@ -33,7 +33,7 @@ label1:
   Procedure: main
   Intermediate Code Statements
 	iLoad:    	v0 <- 0
-	store:    	prev_number <- v0
+	store:    	prev <- v0
 	iLoad:    	v0 <- 1
 	store:    	number <- v0
 	iLoad:    	v0 <- 20
@@ -42,7 +42,7 @@ label1:
 	store:    	i <- v0
 	load:    	v0 <- number
 	store:    	number <- v0
-	load:    	v0 <- prev_number
+	load:    	v0 <- prev
 	store:    	prev_number <- v0
 	call fibonacci
 	move:    	v0 <- v1

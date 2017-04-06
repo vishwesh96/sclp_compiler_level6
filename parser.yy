@@ -11,6 +11,7 @@
 	// pair<Data_Type, string> * decl;
 	Sequence_Ast * sequence_ast;
 	Ast * ast;
+	std::list<Ast *> list_ast;
 	Symbol_Table * symbol_table;
 	Symbol_Table_Entry * symbol_entry;
 	std::vector<Symbol_Table_Entry*> * symbol_entry_list;
@@ -30,7 +31,7 @@
 %token ASSIGN VOID
 %token IF 
 %token WHILE DO 
-//%token RETURN
+%token RETURN
 
 %nonassoc THEN
 %nonassoc ELSE
@@ -47,7 +48,6 @@
 
 %type <symbol_table> optional_variable_declaration_list
 %type <symbol_table> variable_declaration_list
-%type <symbol_table> procedure_declaration_list
 %type <symbol_entry_list> variable_declaration
 // %type <decl> declaration
 %type <vtype> variable_type
@@ -66,6 +66,19 @@
 %type <ast> boolean_expression
 %type <ast> relational_expression
 
+%type <procedure> procedure_declaration
+%type <symbol_table> optional_argument_declaration_list
+%type <symbol_table> argument_declaration_list
+%type <symbol_entry> argument_declaration
+
+%type <list_ast> optional_actual_parameters_list
+%type <list_ast> actual_parameters_list
+%type <ast> actual_parameter
+
+%type <ast> return_statement
+%type <ast> function_call_statement
+%type <ast> function_call
+
  
 //ADD CODE HERE
 
@@ -78,9 +91,7 @@ program:
 	{
 	if (NOT_ONLY_PARSE)
 	{
-		CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");
-
-		program_object.set_procedure(current_procedure, get_line_number());
+		CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");	//TODO6
 		program_object.global_list_in_proc_check();
 	}
 	}
@@ -116,7 +127,7 @@ declaration_list:
 	{
 	if (NOT_ONLY_PARSE)
 	{
-
+-
 		Symbol_Table * global_table = $2;
 
 		CHECK_INVARIANT((global_table != NULL), "Global declarations cannot be null");
@@ -131,11 +142,75 @@ procedure_declaration_list:
 	{
 	if(NOT_ONLY_PARSE)
 	{
-
+		Procedure * proc = $1;
+		CHECK_INVARIANT(proc!=NULL, "Procedure declaration cannot be NULL");
+		CHECK_INPUT(!program_object.variable_in_proc_map_check(proc), "Overloading of the procedure is not allowed",get_line_number());
+		program_object.insert_procedure(proc,get_line_number());
 	}
 	}
 |
 	procedure_declaration_list procedure_declaration
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		Procedure * proc = $2;
+		CHECK_INVARIANT(proc!=NULL, "Procedure declaration cannot be NULL");
+		CHECK_INPUT(!program_object.variable_in_proc_map_check(proc), "Overloading of the procedure is not allowed");
+		program_object.insert_procedure(proc,get_line_number());
+	}
+	}
+;
+
+procedure_declaration:
+	variable_type NAME '(' optional_argument_declaration_list ')' ';'
+	{
+	if (NOT_ONLY_PARSE)
+	{
+		Data_Type d_type = $1;
+		Symbol_Table * st = $4;
+		string * proc_name = $2;
+
+		CHECK_INVARIANT((proc_name!= NULL), "Procedure name cannot be null");
+		CHECK_INVARIANT((d_type!= NULL), "Procedure data type cannot be null");
+
+		Procedure * proc = new Procedure(d_type,name,get_line_number());
+		proc->set_param_list(*st);
+
+		$$ = proc;
+
+	}
+	}
+|
+	VOID NAME '(' optional_argument_declaration_list ')' ';'
+	{
+	if (NOT_ONLY_PARSE)
+	{
+		Data_Type d_type = void_data_type;
+		Symbol_Table * st = $4;
+		string * proc_name = $2;
+
+		CHECK_INVARIANT((proc_name!= NULL), "Procedure name cannot be null");
+		CHECK_INVARIANT((d_type!= NULL), "Procedure data type cannot be null");
+
+		Procedure * proc = new Procedure(d_type,name,get_line_number());
+		proc->set_param_list(*st);
+
+		$$ = proc;
+
+	}
+	}
+;
+
+procedure_definition_list:
+	procedure_definition
+	{
+	if(NOT_ONLY_PARSE)
+	{
+
+	}	
+	}
+|
+	procedure_definition_list procedure_definition
 	{
 	if(NOT_ONLY_PARSE)
 	{
@@ -144,31 +219,25 @@ procedure_declaration_list:
 	}
 ;
 
-procedure_declaration:
-	return_data_type NAME '(' optional_argument_list ')' ';'
-	{
-	if (NOT_ONLY_PARSE)
-	{
-		CHECK_INVARIANT(($2 != NULL), "Procedure name cannot be null");
-		CHECK_INVARIANT((*$2 == "main"), "Procedure name must be main in declaration");
-	}
-	}
-;
-
 procedure_definition:
-	NAME '(' optional_argument_list ')'
+	NAME '(' optional_argument_declaration_list ')'
 	{
 	if (NOT_ONLY_PARSE)
 	{
 		CHECK_INVARIANT(($1 != NULL), "Procedure name cannot be null");
-		CHECK_INVARIANT((*$1 == "main"), "Procedure name must be main");
-
 		string proc_name = *$1;
-
-		current_procedure = new Procedure(void_data_type, proc_name, get_line_number());
 
 		CHECK_INPUT ((program_object.variable_in_symbol_list_check(proc_name) == false),
 			"Procedure name cannot be same as global variable", get_line_number());
+
+		Procedure * proc = program_object.get_procedure(proc_name);
+		if(proc == NULL){
+			//TODO6
+		}
+		Symbol_Table * definition_table = $3;
+		Symbol_Table  declaration_table = proc->get_param_list();
+
+		CHECK_INPUT ((*definition_table)==declaration_table),"Parameters in prototype and definition are not matching", get_line_number());\		
 	}
 	}
 
@@ -179,12 +248,14 @@ procedure_definition:
 
 		CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");
 
-		Symbol_Table * local_table = $6;
+		Symbol_Table * local_table = $7;
 
 		if (local_table == NULL)
 			local_table = new Symbol_Table();
-
-		current_procedure->set_local_list(*local_table);
+		
+		Procedure * proc = program_object.get_procedure(proc_name);
+		proc->check_param_table(local_table);
+		proc->set_param_list(local_table);
 	}
 	}
 
@@ -192,11 +263,16 @@ procedure_definition:
 	{
 	if (NOT_ONLY_PARSE)
 	{
-		Sequence_Ast* seq = $8;
+		Sequence_Ast* seq = $9;
 		CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");
 		CHECK_INVARIANT((seq != NULL), "statement list cannot be null");
 
 		current_procedure->set_sequence_ast(*seq);
+		Ast * return_statement = $10;
+		Procedure * proc = program_object.get_procedure(proc_name);
+		if(proc->get_return_type()==void_data_type){
+			CHECK_INPUT(return_statement->get_data_type()!=int_data_type&&return_statement->get_data_type()!=double_data_type,"Two or more types of return values");
+		}
 	}
 	}
 ;
@@ -353,6 +429,60 @@ variable_list:
 	}
 ;
 
+optional_actual_parameters_list:
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = NULL;
+	}
+	}
+|
+	actual_parameters_list
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = $1;
+	}
+	}	
+;
+
+actual_parameters_list 
+	actual_parameter
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		Ast * actual_parameter = $1;
+		CHECK_INVARIANT((actual_parameter!= NULL), "The actual_parameter cannot be null"); 	//TODO
+		std::list<Ast *> actual_parameters_list = new std::list<Ast*>();
+		actual_parameters_list.push_back(actual_parameter);
+		$$ = actual_parameters_list;
+	}
+	}
+| 
+	actual_parameters_list actual_parameter
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		Ast * actual_parameter = $1;
+		std::list<Ast *> actual_parameters_list = $2;
+		CHECK_INVARIANT((actual_parameter!= NULL), "The actual parameter cannot be null"); 	//TODO
+		CHECK_INVARIANT((actual_parameters_list!= NULL), "The actual parameters list cannot be null"); 	//TODO
+		actual_parameters_list.push_back(actual_parameter);
+		$$ = actual_parameters_list;
+	}
+	}
+;
+
+actual_parameter
+	arith_expression
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = $1;
+	}
+	}
+;
+
 variable_name:
 	NAME
 	{
@@ -475,6 +605,14 @@ statement :
 	}
 	}
 |
+	function_call_statement
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = $1;
+	}
+	}
+|
 	'{' statement_list '}'
 	{
 	if(NOT_ONLY_PARSE)
@@ -485,20 +623,35 @@ statement :
 ;
 
 
+function_call_statement :
+	function_call ';'
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = $1;
+	}
+	}
+;
+
 return_statement :
 	RETURN ';' 
 	{
 	if (NOT_ONLY_PARSE)
 	{
-
+		Ast * ret_ast = new Return_Ast();
+		ret_ast->set_data_type(void_data_type);
+		$$ = ret_ast;
 	}
 	}
 |
-	RETURN arith_expressionfar';' 
+	RETURN arith_expression';' 
 	{
 	if (NOT_ONLY_PARSE)
 	{
-
+		Ast * return_part = $2;
+		CHECK_INVARIANT((return_part!= NULL), "The return_part cannot be null"); 	//TODO
+		Ast * ret_ast = new Return_Ast(return_part);
+		$$  = ret_ast;
 	}
 	}
 ;
@@ -907,6 +1060,34 @@ expression_term:
 		$$ = $1;
 	}
 	}
+| 
+	function_call
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = $1;
+	}
+	}
+;
+
+function_call:
+	NAME '(' optional_actual_parameters_list ')'
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		string fname = *$1;
+		list<Ast*> actual_parameters_list = $3;
+		CHECK_INVARIANT((fname != NULL), "Function call name cannot be null");
+		Ast * function_call_ast;
+		if(actual_parameters_list==NULL){
+			function_call_ast = new Function_Call_Ast(fname);
+		}
+		else{
+			function_call_ast =  new Function_Call_Ast(fname,actual_parameters_list);
+		}
+		$$ = function_call_ast;
+	}
+	}
 ;
 
 variable:
@@ -960,33 +1141,33 @@ constant:
 	}
 ;
 
-return_data_type:
-	INTEGER
-	{
-	if(NOT_ONLY_PARSE)
-	{
-		$$ = int_data_type;
-	}
-	}
-|
-	FLOAT
-	{
-	if(NOT_ONLY_PARSE)
-	{
-		$$ = double_data_type;
-	}
-	}
-| 
-	VOID
-	{
-	if(NOT_ONLY_PARSE)
-	{
-		$$ = void_data_type;
-	}
-	}
-;
+// return_data_type:
+// 	INTEGER
+// 	{
+// 	if(NOT_ONLY_PARSE)
+// 	{
+// 		$$ = int_data_type;
+// 	}
+// 	}
+// |
+// 	FLOAT
+// 	{
+// 	if(NOT_ONLY_PARSE)
+// 	{
+// 		$$ = double_data_type;
+// 	}
+// 	}
+// | 
+// 	VOID
+// 	{
+// 	if(NOT_ONLY_PARSE)
+// 	{
+// 		$$ = void_data_type;
+// 	}
+// 	}
+// ;
 
-optional_argument_list:
+optional_argument_declaration_list:
 	{
 	if(NOT_ONLY_PARSE)
 	{
@@ -1008,6 +1189,13 @@ argument_declaration:
 	{
 	if(NOT_ONLY_PARSE)
 	{
+		Data_Type d_type  = $1;
+		string * name =  $2;
+		CHECK_INVARIANT(name!=NULL,"Formal parameter name cannot be null");
+		CHECK_INVARIANT(d_type!=NULL,"Formal parameter data type cannot be null");
+		CHECK_INPUT(!program_object.variable_in_proc_map_check(*name),"Procedure name cannot be same as formal parameter name",get_line_number());
+		Symbol_Table_Entry * ste = new Symbol_Table_Entry(name,d_type,get_line_number());
+		$$ = ste;
 	}
 	}
 ;
@@ -1017,6 +1205,12 @@ argument_declaration_list:
 	{
 	if(NOT_ONLY_PARSE)
 	{
+		Symbol_Table_Entry * arg = $1;
+		Symbol_Table * arg_list = new Symbol_Table();		
+		CHECK_INVARIANT((arg_list != NULL), "The Formal parameters list cannot be null");
+		CHECK_INVARIANT((arg != NULL), "Formal parameter cannot be null");
+		arg_list->push_symbol(arg);
+		$$ = arg_list;
 	}
 	}
 |
@@ -1024,7 +1218,15 @@ argument_declaration_list:
 	{
 	if(NOT_ONLY_PARSE)
 	{
-
+		// if declaration is local then no need to check in global list
+		// if declaration is global then this list is global list
+		Symbol_Table_Entry * arg = $2;
+		Symbol_Table * arg_list = $1;
+		CHECK_INVARIANT((arg_list != NULL), "The Formal parameters list cannot be null");
+		CHECK_INVARIANT((arg != NULL), "Formal parameter cannot be null");
+		CHECK_INPUT(!arg_list.variable_in_formal_list_check(arg->get_variable_name()),"Formal Parameter declared twice",get_line_number());
+		arg_list.push_symbol(arg);
+		$$ = arg_list;
 	}
 	}
 ;

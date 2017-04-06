@@ -1,16 +1,16 @@
 void main();
 int fibonacci (int prev_number, int number);
 int i, size;
-int prev_number;
+int prev;
 int number;
 
 main()
 {
-    prev_number=0;
+    prev=0;
     number=1;
     size = 20;
     i = 1;
-    fibonacci (prev_number,number);
+    fibonacci (prev,number);
     return ;
 }
 

@@ -1,8 +1,8 @@
 
 	.data
-prev_number:	.word 0
 i:	.word 0
 size:	.word 0
+prev:	.word 0
 number:	.word 0
 
 	.text 			# The .text assembler directive indicates
@@ -72,7 +72,7 @@ main:				# .globl makes main know to the
 # Prologue ends
 
 	li $v0, 0
-	sw $v0, prev_number
+	sw $v0, prev
 	li $v0, 1
 	sw $v0, number
 	li $v0, 20
@@ -81,7 +81,7 @@ main:				# .globl makes main know to the
 	sw $v0, i
 	lw $v0, number
 	sw $v0, 0($sp)
-	lw $v0, prev_number
+	lw $v0, prev
 	sw $v0, -4($sp)
 	sub $sp, $sp, 8
 	jal fibonacci

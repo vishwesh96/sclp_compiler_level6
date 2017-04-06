@@ -272,7 +272,38 @@ public:
 
 class Return_Ast : public Ast
 {
-	
+	Ast * lhs;
+
+	public:
+		Return_Ast(Ast * l);
+		Return_Ast();
+		~Return_Ast();
+
+		Data_Type get_data_type();
+		Ast * get_return_ast();
+		void set_data_type(Data_Type dt);
+
+		void print(ostream & file_buffer);
+
+		Code_For_Ast & compile();
+};
+
+class Function_Call_Ast : public Ast
+{
+	string fname;
+	list<Ast*> actual_params;
+
+	public:
+		Function_Call_Ast(string f,list<Ast*> l);
+		Function_Call_Ast(string f);
+		~Function_Call_Ast();
+
+		Data_Type get_data_type();
+		void set_data_type(Data_Type dt);
+
+		void print(ostream & file_buffer);
+
+		Code_For_Ast & compile();
 };
 
 class Sequence_Ast: public Ast{
