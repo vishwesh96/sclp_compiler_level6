@@ -22,10 +22,10 @@ Program::~Program()
 	//TODO6
 }
 
-void Program::set_procedure(Procedure * proc, int line)
+void Program::add_procedure(Procedure * proc, int line)
 {
-	procedure = proc;
 	//TODO6
+	
 }
 
 void Program::print_sym()
