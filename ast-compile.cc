@@ -955,5 +955,16 @@ void Return_Ast::print(ostream & file_buffer)
 
 Code_For_Ast & Return_Ast::compile()
 {
-	
+
+}
+
+
+void Function_Call_Ast::print(ostream & file_buffer)
+{
+
+}
+
+Code_For_Ast & Function_Call_Ast::compile()
+{
+
 }

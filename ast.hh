@@ -291,11 +291,11 @@ class Return_Ast : public Ast
 class Function_Call_Ast : public Ast
 {
 	string fname;
-	list<Ast*> actual_params;
+	list<Ast*> *actual_params;
 
 	public:
-		Function_Call_Ast(string f,list<Ast*> l);
-		Function_Call_Ast(string f);
+		Function_Call_Ast(string f,list<Ast*> *l, int line);
+		Function_Call_Ast(string f, int line);
 		~Function_Call_Ast();
 
 		Data_Type get_data_type();
