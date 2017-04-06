@@ -955,5 +955,57 @@ void Return_Ast::print(ostream & file_buffer)
 
 Code_For_Ast & Return_Ast::compile()
 {
-	
+	if(lhs==NULL){
+		list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
+		Tgt_Op ic_operator = ret_inst;
+		Return_IC_Stmt * stmt = new Return_IC_Stmt(ic_operator,NULL);
+		ic_list.push_back(stmt);
+
+		Code_For_Ast * return_stmt = new Code_For_Ast();
+		if (ic_list.empty() == false)
+			return_stmt = new Code_For_Ast(ic_list, NULL);
+		return return_stmt;
+	}
+	else{
+		Code_For_Ast & lhs_stmt = lhs->compile();
+		Register_Descriptor * lhs_load_register = lhs_stmt.get_reg();
+		// if(lhs_load_register!=NULL) 	lhs_load_register->set_use_for_expr_result();
+
+		//GOWTHAM : check NULL
+		Register_Addr_Opd *lhs_addr = new Register_Addr_Opd(lhs_load_register);
+		Tgt_Op ic_operator = ret_inst;	
+
+		if(node_data_type == int_data_type){
+			const Register_Use_Category reg_type = fn_result;
+			Register_Descriptor* load_register =  machine_desc_object.get_new_register<reg_type>();	
+			// if(load_register!=NULL) load_register->set_use_for_expr_result();
+			if(lhs_load_register!=NULL) lhs_load_register->reset_use_for_expr_result();
+
+			list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
+			if (lhs_stmt.get_icode_list().empty() == false)
+				ic_list = lhs_stmt.get_icode_list();
+			ic_list.push_back(stmt);	
+			Code_For_Ast * return_stmt = new Code_For_Ast();
+			if (ic_list.empty() == false)
+				return_stmt = new Code_For_Ast(ic_list, load_register);
+			return *return_stmt;
+}
+	else if(node_data_type == double_data_type){
+		const Register_Use_Category reg_type = fn_result;
+		Register_Descriptor* load_register =  machine_desc_object.get_new_register<reg_type>();	
+		if(lhs_load_register!=NULL)	lhs_load_register->reset_use_for_expr_result();
+		Register_Addr_Opd * reg = new Register_Addr_Opd(load_register);
+		Move_IC_Stmt * stmt = new Move_IC_Stmt(ic_operator,lhs_addr,reg);
+		list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
+		if (lhs_stmt.get_icode_list().empty() == false)
+			ic_list = lhs_stmt.get_icode_list();
+		ic_list.push_back(stmt);	
+		Code_For_Ast * uminus_stmt = new Code_For_Ast();
+		if (ic_list.empty() == false)
+			uminus_stmt = new Code_For_Ast(ic_list, load_register);
+		return *uminus_stmt;
+	}
+
+	}
+
 }

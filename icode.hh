@@ -321,6 +321,24 @@ public:
         void print_assembly(ostream & file_buffer);
 };
 
+class Return_IC_Stmt: public Icode_Stmt
+{
+	Ics_Opd * opd;   
+
+public:
+        Return_IC_Stmt(Tgt_Op inst_op, Ics_Opd * opd);
+        ~Return_IC_Stmt() {}
+
+        Return_IC_Stmt& operator=(const Return_IC_Stmt& rhs);
+
+        Instruction_Descriptor & get_inst_op_of_ics();
+
+        Ics_Opd * get_opd();
+        void set_opd(Ics_Opd * io);
+
+        void print_icode(ostream & file_buffer);
+        void print_assembly(ostream & file_buffer);
+};
 
 //////////////////////// Intermediate code for Ast statements ////////////////////////
 

@@ -275,8 +275,8 @@ class Return_Ast : public Ast
 	Ast * lhs;
 
 	public:
-		Return_Ast(Ast * l, int line);
-		Return_Ast(int line);
+		Return_Ast(Ast * l);
+		Return_Ast();
 		~Return_Ast();
 
 		Data_Type get_data_type();
