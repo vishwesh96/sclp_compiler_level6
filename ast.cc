@@ -685,3 +685,39 @@ void Sequence_Ast::print(ostream &file_buffer)
 Sequence_Ast::~Sequence_Ast()
 {
 }
+
+
+
+Return_Ast::Return_Ast(Ast * l, int line)
+{
+	lineno = line;
+	node_data_type = l->node_data_type;
+	lhs = l;
+}
+
+Return_Ast::Return_Ast(int line)
+{
+	lineno = line;
+	node_data_type = void_data_type;
+	lhs = l;
+}
+
+Return_Ast::~Return_Ast()
+{
+	free lhs;
+}
+
+Data_Type Return_Ast::get_data_type()
+{
+	return node_data_type;
+}
+
+Ast * Return_Ast::get_return_ast()
+{
+	return lhs;
+}
+void Return_Ast::set_data_type(Data_Type dt)
+{
+	node_data_type = dt;
+}
+

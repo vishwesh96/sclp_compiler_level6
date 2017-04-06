@@ -947,3 +947,13 @@ void Sequence_Ast::print_icode(ostream & file_buffer)
 
 template class Number_Ast<double>;
 template class Number_Ast<int>;
+
+void Return_Ast::print(ostream & file_buffer)
+{
+	
+}
+
+Code_For_Ast & Return_Ast::compile()
+{
+	
+}
