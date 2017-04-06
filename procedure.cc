@@ -25,7 +25,7 @@ Procedure::~Procedure()
 
 void Procedure::check_formal_table(Symbol_Table & table)
 {
-	
+	return;	
 }
 
 void Procedure::set_formal_list(Symbol_Table & new_list)

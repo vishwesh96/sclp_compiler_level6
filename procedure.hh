@@ -29,10 +29,10 @@ public:
 
 	void set_proc_defined();
 	bool is_proc_defined();
-	void check_param_table(Symbol_Table & table);
-	void set_param_list(Symbol_Table & new_list);
-	Symbol_Table get_param_list();
-	bool variable_in_param_list_check(string variable);
+	void check_formal_table(Symbol_Table & table);
+	void set_formal_list(Symbol_Table & new_list);
+	Symbol_Table get_formal_list();
+	bool variable_in_formal_list_check(string variable);
 
 	string get_proc_name();
   	void set_sequence_ast(Sequence_Ast & sa);

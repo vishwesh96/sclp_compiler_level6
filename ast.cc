@@ -699,7 +699,7 @@ Return_Ast::Return_Ast(int line)
 {
 	lineno = line;
 	node_data_type = void_data_type;
-	lhs = l;
+	lhs = NULL;
 }
 
 Return_Ast::~Return_Ast()
@@ -721,3 +721,34 @@ void Return_Ast::set_data_type(Data_Type dt)
 	node_data_type = dt;
 }
 
+
+Function_Call_Ast::Function_Call_Ast(string f,list<Ast*> *l, int line)
+{
+	fname = f;
+	node_data_type = program_object.get_procedure(fname)->get_data_type();
+	actual_params = l;
+	lineno = line;
+}
+
+Function_Call_Ast::Function_Call_Ast(string f, int line)
+{
+	fname = f;
+	node_data_type = program_object.get_procedure(fname)->get_data_type();
+	lineno = line;
+	actual_params = NULL;
+}
+
+Function_Call_Ast::~Function_Call_Ast()
+{
+
+}
+
+Data_Type Function_Call_Ast::get_data_type()
+{
+	return node_data_type;
+}
+
+void Function_Call_Ast::set_data_type(Data_Type dt)
+{
+	node_data_type = dt;
+}
