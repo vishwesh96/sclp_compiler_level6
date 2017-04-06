@@ -25,7 +25,7 @@ Procedure::~Procedure()
 
 void Procedure::check_formal_table(Symbol_Table & table)
 {
-
+	
 }
 
 void Procedure::set_formal_list(Symbol_Table & new_list)
@@ -66,35 +66,28 @@ Data_Type Procedure::get_return_type()
 
 Symbol_Table_Entry & Procedure::get_symbol_table_entry(string variable_name)
 {
-	
+	if(local_symbol_table.variable_in_symbol_list_check(variable_name))	{
+		return local_symbol_table.get_symbol_table_entry(variable_name);
+	}
+	if(formal_symbol_table.variable_in_formal_list_check(variable_name))	{
+		return formal_symbol_table.get_symbol_table_entry(variable_name);
+	}
+
 }
 
 void Procedure::print(ostream & file_buffer)
 {
-
+	sequence_ast->print(file_buffer);
 }
 
 void Procedure::print_sym(ostream & file_buffer)
 {
-
+	local_symbol_table.print(file_buffer);
 }
 
 
 bool Procedure::variable_in_symbol_list_check(string variable)
 {
-
-}
-
-void Procedure::compile()
-{
-
-}
-void Procedure::print_icode(ostream & file_buffer)
-{
-
-}
-void Procedure::print_assembly(ostream & file_buffer)
-{
-
+	return local_symbol_table.variable_in_symbol_list_check(variable);
 }
 

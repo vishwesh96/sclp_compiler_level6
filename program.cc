@@ -22,10 +22,35 @@ Program::~Program()
 	//TODO6
 }
 
+void Program::delete_all()
+{
+	for(map<string, Procedure*>::iterator it = proc_map.begin();it!=proc_map.end();it++){
+		delete it->second;
+	}
+	proc_map.clear();
+}
+
 void Program::add_procedure(Procedure * proc, int line)
 {
 	//TODO6
-	
+	if(procedure!=NULL)
+	{
+		string proc_name = proc->get_proc_name();
+		CHECK_INPUT_AND_ABORT((proc_map.find(proc_name) == proc_map.end()),"Overloading..Procedure already declared"); // This ideally should not happen
+		proc_map[proc_name] = proc;
+	}
+}
+
+void Program::set_global_table(Symbol_Table & new_global_table)
+{
+	global_symbol_table = new_global_table;
+	global_symbol_table.set_table_scope(global);
+}
+
+
+Symbol_Table_Entry & Program::get_symbol_table_entry(string variable)
+{
+	return global_symbol_table.get_symbol_table_entry(variable);
 }
 
 void Program::print_sym()
@@ -39,47 +64,28 @@ void Program::print()
 {
 
 	//TODO6
-	procedure->print();
+	// check at last
+	for(auto it = proc_map.begin();it!=proc_map.end();it++)
+	{
+		it->second->print();
+		cout<<endl;
+	}
 }
 
-void Program::global_list_in_proc_check()
-{
-
-	//TODO6
-}
-
-void Program::set_global_table(Symbol_Table & new_global_table)
-{
-	global_symbol_table = new_global_table;
-}
 
 bool Program::variable_in_symbol_list_check(string variable)
 {
 	return global_symbol_table.variable_in_symbol_list_check(variable);
 }
 
-bool Program::variable_proc_name_check(string symbol)
+void Program::global_list_in_proc_check()
 {
-	return (procedure->get_proc_name()==symbol);
-}	
-
-Symbol_Table_Entry & Program::get_symbol_table_entry(string variable)
-{
-	return global_symbol_table.get_symbol_table_entry(variable)
+	// check later
+	return;
 }
 
-void Program::compile()
-{
-	procedure->compile();
-}
-
-void Program::delete_all()
-{
-	delete(procedure);
-	global_symbol_table.~Symbol_Table();
-}
 
 bool Program::variable_in_proc_map_check(string variable)
 {
-	
+	return (proc_map.find(variable) != proc_map.end());
 }
