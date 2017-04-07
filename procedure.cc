@@ -15,11 +15,20 @@ Procedure::Procedure(Data_Type proc_return_type, string proc_name, int line)
 	this->return_type = proc_return_type;
 	this->name = proc_name;
 	this->lineno = line;
+	this->is_defined = false;
 }
 
 Procedure::~Procedure()
 {
 
+}
+void Procedure::set_proc_defined()
+{
+	is_defined = true;
+}
+bool Procedure::is_proc_defined()
+{
+	return is_defined;
 }
 
 void Procedure::check_formal_table(Symbol_Table & table)

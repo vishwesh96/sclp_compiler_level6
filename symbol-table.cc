@@ -44,8 +44,8 @@ void Symbol_Table::operator==(Symbol_Table & formal_list)
 		CHECK_INPUT((name1 == name2), "Variable name of one of the parameters of the procedre and its prototypes doesn't match", NO_FILE_LINE);
 	}
 
-	// CHECK_INPUT((i == variable_table.end() && j == f_list.end()),
-	// 		"Procedure and its prototype parameter f_list length doens't match", NO_FILE_LINE);
+	CHECK_INPUT((i == variable_table.end() && j == f_list.end()),
+			"Procedure and its prototype parameter f_list length doens't match", NO_FILE_LINE);
 }
 
 void Symbol_Table::set_table_scope(Table_Scope list_scope)

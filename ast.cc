@@ -73,20 +73,17 @@ Assignment_Ast::~Assignment_Ast()
 
 bool Assignment_Ast::check_ast()
 {
-	CHECK_INVARIANT((rhs != NULL), "Rhs of Assignment_Ast cannot be null");
-	CHECK_INVARIANT((lhs != NULL), "Lhs of Assignment_Ast cannot be null");
+	// CHECK_INVARIANT((rhs != NULL), "Rhs of Assignment_Ast cannot be null");		//TODO6
+	// CHECK_INVARIANT((lhs != NULL), "Lhs of Assignment_Ast cannot be null");
 
 	// use typeid(), get_data_type()
 	//ADD CODE HERE
 	// std::cout<<lhs->get_data_type()<<"\n"<<rhs->get_data_type()<<std::endl;
-	if(lhs->get_data_type()!=rhs->get_data_type()){ //TODO: if lhs is ass_Ast or arith_Ast or num then show error
-		// if(typeid(*rhs)==typeid(Number_Ast<int>) || typeid(*rhs)==typeid(Number_Ast<float>)){	//TODO: so that the same error is show
-		// 	if(rhs->is_value_zero()){
-		// 		return true;
-		// 	}	
-		// }	
-		CHECK_INPUT(CONTROL_SHOULD_NOT_REACH,"Assignment statement data type not compatible", lineno);
-		return false;
+	if(lhs!=NULL&&rhs!=NULL){
+		if(lhs->get_data_type()!=rhs->get_data_type()){ //TODO: if lhs is ass_Ast or arith_Ast or num then show error
+			CHECK_INPUT(CONTROL_SHOULD_NOT_REACH,"Assignment statement data type not compatible", lineno);
+			return false;
+		}		
 	}
 	return true;
 }

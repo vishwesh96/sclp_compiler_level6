@@ -1,10 +1,9 @@
-int main(int a,float b);
-main(int a,float b){
-	return a+a;
+int main(float a,int b);
+int f();
+main(float a,int b){
+	b = main(1.0,main(1.0,1));
+	return 1;
 }
-
-// f(){
-// 	return 1.0;
+// f(float a,int b){
+// 	return 1;
 // }
-
-

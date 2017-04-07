@@ -92,7 +92,7 @@ program:
 	if (NOT_ONLY_PARSE)
 	{
 
-		CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");	//TODO6
+		// CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");	//TODO6
 		program_object.global_list_in_proc_check();
 	}
 	}
@@ -232,17 +232,19 @@ procedure_definition:
 			"Procedure name cannot be same as global variable", get_line_number());
 
 		Procedure * proc = program_object.get_procedure(proc_name);
-		if(proc == NULL){
-			//TODO6
-		}
+		CHECK_INPUT(proc!=NULL,"Procedure corresponding to the name is not found",get_line_number());		
 		current_procedure = proc;			//set current procedure
-		Symbol_Table * definition_table = $3;
-		if (definition_table == NULL)
-			definition_table = new Symbol_Table();
+		if(current_procedure!=NULL){
+			CHECK_INPUT(!proc->is_proc_defined(),"Procedure has already been defined before",get_line_number());
+			proc->set_proc_defined();
+			Symbol_Table * definition_table = $3;
+			if (definition_table == NULL)
+				definition_table = new Symbol_Table();
 
-		Symbol_Table  declaration_table = proc->get_formal_list();
-		// CHECK_INPUT ((*definition_table)==declaration_table,"Parameters in prototype and definition are not matching", get_line_number());		
-		(*definition_table)==declaration_table;		
+			Symbol_Table  declaration_table = proc->get_formal_list();
+			// CHECK_INPUT ((*definition_table)==declaration_table,"Parameters in prototype and definition are not matching", get_line_number());		
+			(*definition_table)==declaration_table;		
+		}
 
 	}
 	}
@@ -251,20 +253,22 @@ procedure_definition:
 	{
 	if (NOT_ONLY_PARSE)
 	{
-		string proc_name = *$1;
+		if(current_procedure!=NULL){
 
-		// CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");
+			string proc_name = *$1;
 
-		Symbol_Table * local_table = $7;
+			// CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");
 
-		if (local_table == NULL){
-			local_table = new Symbol_Table();
+			Symbol_Table * local_table = $7;
+
+			if (local_table == NULL){
+				local_table = new Symbol_Table();
+			}
+
+			// Procedure * proc = program_object.get_procedure(proc_name);
+			current_procedure->check_formal_table(*local_table);
+			current_procedure->set_local_list(*local_table);
 		}
-
-		// Procedure * proc = program_object.get_procedure(proc_name);
-		current_procedure->check_formal_table(*local_table);
-		current_procedure->set_local_list(*local_table);
-
 	}
 	}
 
@@ -272,21 +276,30 @@ procedure_definition:
 	{
 	if (NOT_ONLY_PARSE)
 	{
+		if(current_procedure!=NULL){
 
-		string proc_name = *$1;
-		Sequence_Ast* seq = $9;
-		// CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");
-		CHECK_INVARIANT((seq != NULL), "statement list cannot be null");
-		// Procedure * proc = program_object.get_procedure(proc_name);
+			string proc_name = *$1;
+			Sequence_Ast* seq = $9;
+			// CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");
+			CHECK_INVARIANT((seq != NULL), "statement list cannot be null");
+			// Procedure * proc = program_object.get_procedure(proc_name);
 
-		current_procedure->set_sequence_ast(*seq);
-		Ast * return_statement = $10;
+			current_procedure->set_sequence_ast(*seq);
+			Ast * return_statement = $10;
 
-		if(current_procedure->get_return_type()==void_data_type){
-			CHECK_INPUT(return_statement->get_data_type()!=int_data_type&&return_statement->get_data_type()!=double_data_type,"Two or more types of return values",get_line_number()-1);
+			if(current_procedure->get_return_type()==int_data_type){
+				CHECK_INPUT(return_statement->get_data_type()==int_data_type||return_statement->get_data_type()==void_data_type,"Two or more types of return values",get_line_number()-1);
+			}
+
+			if(current_procedure->get_return_type()==double_data_type){
+				CHECK_INPUT(return_statement->get_data_type()==double_data_type||return_statement->get_data_type()==void_data_type,"Two or more types of return values",get_line_number()-1);
+			}
+			
+			if(current_procedure->get_return_type()==void_data_type){
+				CHECK_INPUT(return_statement->get_data_type()==void_data_type,"Two or more types of return values",get_line_number()-1);
+			}
+			seq->ast_push_back(return_statement);
 		}
-		seq->ast_push_back(return_statement);
-
 	}
 	}
 	
@@ -583,7 +596,7 @@ statement_list:
 
 		Sequence_Ast * statement_list = $1;
 		Ast * statement = $2; 
-		CHECK_INVARIANT((statement!= NULL), "The statement  cannot be null"); 	//TODO
+		// CHECK_INVARIANT((statement!= NULL), "The statement  cannot be null"); 	//TODO
 		statement_list->ast_push_back(statement);
 		$$ = statement_list;
 		// std::cout<<"statement list finished"<<endl;		
@@ -660,9 +673,14 @@ return_statement :
 	{
 	if (NOT_ONLY_PARSE)
 	{
-		Ast * ret_ast = new Return_Ast(current_procedure->get_proc_name(),get_line_number());
-		ret_ast->set_data_type(void_data_type);
-		$$ = ret_ast;
+		if(current_procedure!=NULL){
+			Ast * ret_ast = new Return_Ast(current_procedure->get_proc_name(),get_line_number());
+			ret_ast->set_data_type(void_data_type);
+			$$ = ret_ast;
+		}
+		else{
+			$$ = NULL;
+		}
 	}
 	}
 |
@@ -670,10 +688,16 @@ return_statement :
 	{
 	if (NOT_ONLY_PARSE)
 	{
-		Ast * return_part = $2;
-		CHECK_INVARIANT((return_part!= NULL), "The return_part cannot be null"); 	//TODO
-		Ast * ret_ast = new Return_Ast(return_part,current_procedure->get_proc_name(),get_line_number());
-		$$  = ret_ast;
+
+		if(current_procedure!=NULL){
+			Ast * return_part = $2;
+			CHECK_INVARIANT((return_part!= NULL), "The return_part cannot be null"); 	//TODO
+			Ast * ret_ast = new Return_Ast(return_part,current_procedure->get_proc_name(),get_line_number());
+			$$  = ret_ast;
+		}
+		else{
+			$$ = NULL;
+		}
 	}
 	}
 ;
@@ -1103,14 +1127,48 @@ function_call:
 		string *fname = $1;
 		list<Ast*> *actual_parameters_list = $3;
 		CHECK_INVARIANT((fname != NULL), "Function call name cannot be null");
-		Ast * function_call_ast;
-		if(actual_parameters_list==NULL){
-			function_call_ast = new Function_Call_Ast(*fname,get_line_number());
+
+		Procedure * proc = program_object.get_procedure(*fname);
+		CHECK_INPUT(proc!=NULL,"Procedure corresponding to the name is not found",get_line_number());		
+		bool valid = true;
+		if(proc==NULL)
+			valid = false;
+		if(valid){
+			CHECK_INPUT(proc->is_proc_defined(),"Called procedure is not defined",get_line_number());
+			if(!proc->is_proc_defined())
+				valid = false;	
 		}
-		else{
-			function_call_ast =  new Function_Call_Ast(*fname,actual_parameters_list,get_line_number());
+		if(valid){
+			list<Symbol_Table_Entry *> formal_entries = proc->get_formal_list().get_table();
+			CHECK_INPUT(formal_entries.size()==(*actual_parameters_list).size(),"Actual and formal parameter count do not match",get_line_number());
+			if(formal_entries.size()!=(*actual_parameters_list).size())
+			valid = false;
+			auto it = (*actual_parameters_list).begin();
+			auto fit = formal_entries.begin();
+			if(valid){
+				for(;it!=(*actual_parameters_list).end();it++,fit++){
+					CHECK_INPUT((*fit)->get_data_type()==(*it)->get_data_type(),"Actual and formal parameters data types are not matching",get_line_number());
+					if((*fit)->get_data_type()!=(*it)->get_data_type()){
+						valid = false;
+						break;
+					}
+				}	
+			
+			}
+		}	
+
+		if(valid){
+			Ast * function_call_ast;
+			if(actual_parameters_list==NULL){
+				function_call_ast = new Function_Call_Ast(*fname,get_line_number());
+			}
+			else{
+				function_call_ast =  new Function_Call_Ast(*fname,actual_parameters_list,get_line_number());
+			}
+			$$ = function_call_ast;
 		}
-		$$ = function_call_ast;
+		else
+			$$ = NULL;
 	}
 	}
 ;
@@ -1125,23 +1183,27 @@ variable:
 		Symbol_Table_Entry * var_table_entry;
 
 		CHECK_INVARIANT(($1 != NULL), "Variable name cannot be null");
+		if(current_procedure!=NULL){
+			if (current_procedure->variable_in_formal_list_check(*$1))
+				var_table_entry = &(current_procedure->get_symbol_table_entry(*$1));
 
-		if (current_procedure->variable_in_formal_list_check(*$1))
-			var_table_entry = &(current_procedure->get_symbol_table_entry(*$1));
+			else if (current_procedure->variable_in_symbol_list_check(*$1))
+				 var_table_entry = &(current_procedure->get_symbol_table_entry(*$1));
 
-		else if (current_procedure->variable_in_symbol_list_check(*$1))
-			 var_table_entry = &(current_procedure->get_symbol_table_entry(*$1));
-
-		else if (program_object.variable_in_symbol_list_check(*$1))
-			var_table_entry = &(program_object.get_symbol_table_entry(*$1));
+			else if (program_object.variable_in_symbol_list_check(*$1))
+				var_table_entry = &(program_object.get_symbol_table_entry(*$1));
 
 
-		else
-			CHECK_INPUT_AND_ABORT(CONTROL_SHOULD_NOT_REACH, "Variable has not been declared", get_line_number());
+			else
+				CHECK_INPUT_AND_ABORT(CONTROL_SHOULD_NOT_REACH, "Variable has not been declared", get_line_number());
 
-		$$ = new Name_Ast(*$1, *var_table_entry, get_line_number());
-
-		delete $1;
+			$$ = new Name_Ast(*$1, *var_table_entry, get_line_number());
+			delete $1;
+		}
+		else{
+			$$ = NULL;
+		}
+		
 
 	}
 	}
@@ -1222,6 +1284,9 @@ argument_declaration:
 		Data_Type d_type  = $1;
 		string * name =  $2;
 		CHECK_INVARIANT(name!=NULL,"Formal parameter name cannot be null");
+		// if(current_procedure!=NULL){
+		// 	CHECK_INPUT((*name!=current_procedure->get_proc_name()),"Procedure name cannot be same as formal parameter name",get_line_number());			
+		// }
 		CHECK_INPUT(!program_object.variable_in_proc_map_check(*name),"Procedure name cannot be same as formal parameter name",get_line_number());
 		Symbol_Table_Entry * ste = new Symbol_Table_Entry(*name,d_type,get_line_number());
 		$$ = ste;
