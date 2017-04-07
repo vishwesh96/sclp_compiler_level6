@@ -716,11 +716,11 @@ print_statement :
 	{
 	if(NOT_ONLY_PARSE)
 	{
-		string  str = *$2;
+		string  str = *$3;
 		int key = string_map.size();
 		string_map[key] = str;
-		cout<<str;
-		Ast * print_ast = New Print_Ast(key,get_line_number());
+		// cout<<str; 
+		Ast * print_ast = new Print_Ast(key,get_line_number());
 		$$ = print_ast;
 	}
 	}

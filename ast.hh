@@ -318,13 +318,12 @@ class Print_Ast : public Ast
 	public:
 		Print_Ast(int  s_key,int line);
 		Print_Ast(Ast  *expr,int line);
-		Print_Ast();
 		~Print_Ast();
 
 		Data_Type get_data_type();
 		void set_data_type(Data_Type dt);
 
-		// void print(ostream & file_buffer);
+		void print(ostream & file_buffer);
 
 		Code_For_Ast & compile();
 		void print_icode(ostream & file_buffer);

@@ -55,12 +55,12 @@ void Mem_Addr_Opd::print_asm_opd(ostream & file_buffer)
 	if (symbol_scope == local)
 	{
 		int offset = symbol_entry->get_start_offset();
-		file_buffer << offset << "($sp)";
+		file_buffer << offset << "($fp)";
 	}
-	if (symbol_scope == formal)
+	else if (symbol_scope == formal)
 	{
 		int offset = symbol_entry->get_start_offset();
-		file_buffer << offset << "($fp)";
+		file_buffer << offset << "($sp)";
 	}
 	else
 		file_buffer << symbol_entry->get_variable_name();
@@ -649,19 +649,24 @@ void Function_Call_IC_Stmt::print_assembly(ostream & file_buffer)
 	file_buffer<<"\t"<<"jal "<<fname<<endl;
 }
 
-Print_IC_Stmt::Print_IC_Stmt(Tgt_Op op,Icode_Stmt * is, int s_key, Data_Type d);
+Print_IC_Stmt::Print_IC_Stmt(Tgt_Op op,Icode_Stmt * is, Data_Type d)
 {
 	CHECK_INVARIANT((machine_desc_object.spim_instruction_table[op] != NULL),
 			"Instruction description in spim table cannot be null");
 	op_desc = *(machine_desc_object.spim_instruction_table[op]);
 	stmt = is;
-	string_key = s_key;
 	dt = d;
 }
-Print_IC_Stmt::~Print_IC_Stmt()
+Print_IC_Stmt::Print_IC_Stmt(Tgt_Op op, int s_key)
 {
-
+	CHECK_INVARIANT((machine_desc_object.spim_instruction_table[op] != NULL),
+			"Instruction description in spim table cannot be null");
+	op_desc = *(machine_desc_object.spim_instruction_table[op]);
+	stmt = NULL;
+	string_key = s_key;
+	dt = void_data_type;
 }
+
         // Icode_Stmt * get_stmt();
         // void set_stmt(Icode_Stmt * io);
 
@@ -677,6 +682,29 @@ void Print_IC_Stmt::print_icode(ostream & file_buffer)
 }
 void Print_IC_Stmt::print_assembly(ostream & file_buffer)
 {
-
+	file_buffer<<"\taddi $sp, $sp, -4\n";
+	file_buffer<<"\tsw $v0, 0($sp)\n";
+	file_buffer<<"\taddi $sp, $sp, -4\n";
+	file_buffer<<"\tsw $a0, 0($sp)\n";
+	file_buffer<<"\taddi $sp, $sp, -8\n";
+	file_buffer<<"\ts.d $f12, 0($sp)\n";
+	if(stmt!=NULL){
+		stmt->print_assembly(file_buffer);
+		if(dt == int_data_type)
+			file_buffer<<"\tli $v0, 1\n";
+		else
+			file_buffer<<"\tli $v0, 3\n";
+	}
+	else{
+		file_buffer<<"\tla $a0, string"+to_string(string_key)<<"\n";
+		file_buffer<<"\tli $v0, 4\n";
+	}
+	file_buffer<<"\tsyscall \n";
+	file_buffer<<"\tl.d $f12, 0($sp)\n";
+	file_buffer<<"\taddi $sp, $sp, 8\n";
+	file_buffer<<"\tlw $a0, 0($sp)\n";
+	file_buffer<<"\taddi $sp, $sp, 4\n";
+	file_buffer<<"\tlw $v0, 0($sp)\n";
+	file_buffer<<"\taddi $sp, $sp, 4\n";
 }
 

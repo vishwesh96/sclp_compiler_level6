@@ -364,7 +364,8 @@ class Print_IC_Stmt : public Icode_Stmt
 	Data_Type dt;
 
 	public:	
-        Print_IC_Stmt(Tgt_Op inst_op,Icode_Stmt * is, int s_key, Data_Type d=void_data_type);
+        Print_IC_Stmt(Tgt_Op inst_op,Icode_Stmt * is, Data_Type d);
+        Print_IC_Stmt(Tgt_Op inst_op, int s_key);
         ~Print_IC_Stmt() {}
 
         Print_IC_Stmt& operator=(const Print_IC_Stmt& rhs);

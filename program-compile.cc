@@ -33,9 +33,14 @@ void Program::print_assembly()
 
 	command_options.create_output_buffer();
 	std::ostream & file_buffer = command_options.get_output_buffer();
-	file_buffer<<"	.data"<<endl;
+	if((global_symbol_table.get_table().begin() != global_symbol_table.get_table().end()) || (string_map.begin()!=string_map.end())){
+		file_buffer<<"	.data"<<endl;
+	}
 	for(auto it = global_symbol_table.get_table().begin();it!=global_symbol_table.get_table().end();it++){
 		file_buffer<<(*it)->get_variable_name()<<":	.word 0"<<endl;
+	}
+	for(auto it = string_map.begin();it!=string_map.end();it++){
+		file_buffer<<"string"<<(it->first)<<":	 .asciiz 	"<<it->second<<endl;
 	}
   	for(auto it = proc_map.begin();it!=proc_map.end();it++)
 	{

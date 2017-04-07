@@ -735,7 +735,7 @@ Print_Ast::Print_Ast(int s_key,int line){
 Print_Ast::Print_Ast(Ast * e,int line){
 	expr = e;
 	node_data_type = expr->get_data_type();
-	lineno = line
+	lineno = line;
 	is_string = false;
 }
 
@@ -787,6 +787,10 @@ void Return_Ast::print(ostream & file_buffer)
 }
 
 void Function_Call_Ast::print(ostream & file_buffer)
+{
+
+}
+void Print_Ast::print(ostream & file_buffer)
 {
 
 }
