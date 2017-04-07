@@ -78,6 +78,7 @@ Symbol_Table_Entry & Procedure::get_symbol_table_entry(string variable_name)
 
 void Procedure::print(ostream & file_buffer)
 {
+
 	sequence_ast->print(file_buffer);
 }
 

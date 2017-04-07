@@ -273,10 +273,10 @@ public:
 class Return_Ast : public Ast
 {
 	Ast * lhs;
-
+	string fname;
 	public:
-		Return_Ast(Ast * l,int line);
-		Return_Ast(int line);
+		Return_Ast(Ast * l,string fname,int line);
+		Return_Ast(string fname,int line);
 		~Return_Ast();
 
 		Data_Type get_data_type();

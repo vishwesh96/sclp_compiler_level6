@@ -950,12 +950,12 @@ template class Number_Ast<int>;
 
 
 Code_For_Ast & Return_Ast::compile()
-{
+{	
 	machine_desc_object.clear_local_register_mappings();	//TODO6
 	if(lhs==NULL){
 		list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
 		Tgt_Op ic_operator = ret_inst;
-		Return_IC_Stmt * stmt = new Return_IC_Stmt(ic_operator);
+		Return_IC_Stmt * stmt = new Return_IC_Stmt(ic_operator,fname);
 		ic_list.push_back(stmt);
 		Code_For_Ast * return_stmt = new Code_For_Ast();
 		if (ic_list.empty() == false)
@@ -978,7 +978,7 @@ Code_For_Ast & Return_Ast::compile()
 			Tgt_Op ic_operator = mov;	
 			Register_Addr_Opd * reg = new Register_Addr_Opd(move_register);
 			Move_IC_Stmt * stmt = new Move_IC_Stmt(ic_operator,lhs_addr,reg);
-			Return_IC_Stmt * ret_stmt = new Return_IC_Stmt(ret_inst);
+			Return_IC_Stmt * ret_stmt = new Return_IC_Stmt(ret_inst,fname);
 			list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
 			if (lhs_stmt.get_icode_list().empty() == false)
 				ic_list = lhs_stmt.get_icode_list();
@@ -996,7 +996,7 @@ Code_For_Ast & Return_Ast::compile()
 		Tgt_Op ic_operator = move_d;	//TODO6
 		Register_Addr_Opd * reg = new Register_Addr_Opd(move_register);
 		Move_IC_Stmt * stmt = new Move_IC_Stmt(ic_operator,lhs_addr,reg);
-		Return_IC_Stmt * ret_stmt = new Return_IC_Stmt(ret_inst);
+		Return_IC_Stmt * ret_stmt = new Return_IC_Stmt(ret_inst,fname);
 		list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
 		if (lhs_stmt.get_icode_list().empty() == false)
 			ic_list = lhs_stmt.get_icode_list();
@@ -1051,7 +1051,6 @@ Code_For_Ast & Function_Call_Ast::compile()
 	Function_Call_IC_Stmt *call_stmt = new Function_Call_IC_Stmt(jal,fname); 
 	ic_list.push_back(call_stmt);	
 	Tgt_Op ret_move_op;
-	cout<<"A"<<endl;
 	if(node_data_type == int_data_type){
 		ret_move_op = mov;
 		Move_IC_Stmt* move_ret = new Move_IC_Stmt(ret_move_op,new Register_Addr_Opd(machine_desc_object.spim_register_table[v1]),new Register_Addr_Opd(machine_desc_object.spim_register_table[v0]));	

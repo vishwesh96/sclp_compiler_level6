@@ -11,7 +11,9 @@
 
 void Procedure::compile()
 {
-	sequence_ast->compile();
+	// if(is_proc_defined())	
+		sequence_ast->compile();
+
 }
 void Procedure::print_icode(ostream & file_buffer)
 {
@@ -50,6 +52,6 @@ void Procedure:: print_epilogue(ostream & file_buffer)
 	file_buffer << "\t" << "add $sp, $sp, " << 8 - local_symbol_table.get_size() <<  "\n";
 	file_buffer << "\t" << "lw $fp, -4($sp)" << "\n";
 	file_buffer << "\t" << "lw $ra, 0($sp)" << "\n";
-	file_buffer << "\t" << "jr" << "\t  " << "$31" << "\t\t" << "# Jump back to the called procedure" "\n";
+	file_buffer << "\t" << "jr" << "\t\t  " << "$31" << "\t\t" << "# Jump back to the called procedure" "\n";
 	file_buffer << "# Epilogue Ends\n\n";
 };

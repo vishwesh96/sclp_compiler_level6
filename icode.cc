@@ -598,11 +598,12 @@ template class Const_Opd<int>;
 template class Const_Opd<double>;
 
 
-Return_IC_Stmt::Return_IC_Stmt(Tgt_Op op)
+Return_IC_Stmt::Return_IC_Stmt(Tgt_Op op,string f)
 {
 	CHECK_INVARIANT((machine_desc_object.spim_instruction_table[op] != NULL),
 			"Instruction description in spim table cannot be null");
 	op_desc = *(machine_desc_object.spim_instruction_table[op]);
+	fname = f;
 }
 
 Return_IC_Stmt& Return_IC_Stmt::operator=(const Return_IC_Stmt& rhs)
@@ -622,7 +623,7 @@ void Return_IC_Stmt::print_icode(ostream & file_buffer)
 
 void Return_IC_Stmt::print_assembly(ostream & file_buffer)
 {
-	file_buffer<<"\t"<<"j\t"<<"$31"<<endl;
+	file_buffer<<"\t"<<"j "<<"epilogue_"<<fname<<endl;
 }
 
 Function_Call_IC_Stmt::Function_Call_IC_Stmt(Tgt_Op op,string f)

@@ -675,10 +675,12 @@ void Sequence_Ast::ast_push_back(Ast *ast)
 void Sequence_Ast::print(ostream &file_buffer)
 {
 	//GOWTHAM
+
 	file_buffer<<"\n      Sequence Ast:\n";
 	for(std::list<Ast *>::iterator it = statement_list.begin();it!=statement_list.end();it++){
 		(*it)->print(file_buffer);
 	}
+
 
 }
 
@@ -688,16 +690,18 @@ Sequence_Ast::~Sequence_Ast()
 
 
 
-Return_Ast::Return_Ast(Ast * l, int line)
+Return_Ast::Return_Ast(Ast * l,string f,int line)
 {
 	lineno = line;
+	fname = f;
 	node_data_type = l->get_data_type();
 	lhs = l;
 }
 
-Return_Ast::Return_Ast(int line)
+Return_Ast::Return_Ast(string f,int line)
 {
 	lineno = line;
+	fname = f;
 	node_data_type = void_data_type;
 	lhs = NULL;
 }
@@ -756,7 +760,8 @@ void Function_Call_Ast::set_data_type(Data_Type dt)
 void Return_Ast::print(ostream & file_buffer)
 {
 	file_buffer<<"\n"<<setw(20)<<"RETURN\n";
-	lhs->print(file_buffer);
+	if(lhs!=NULL)
+		lhs->print(file_buffer);
 }
 
 void Function_Call_Ast::print(ostream & file_buffer)

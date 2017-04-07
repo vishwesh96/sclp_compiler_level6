@@ -43,6 +43,7 @@ int main(int argc, char * argv[])
 
 		if (error_status() == false)
 		{
+			
 		#ifdef COMPILE
 			program_object.compile();
 

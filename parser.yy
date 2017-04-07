@@ -91,6 +91,7 @@ program:
 	{
 	if (NOT_ONLY_PARSE)
 	{
+
 		CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");	//TODO6
 		program_object.global_list_in_proc_check();
 	}
@@ -184,7 +185,6 @@ procedure_declaration:
 	{
 	if (NOT_ONLY_PARSE)
 	{
-
 		Data_Type d_type = void_data_type;
 		Symbol_Table * st = $4;
 		string * proc_name = $2;
@@ -286,6 +286,7 @@ procedure_definition:
 			CHECK_INPUT(return_statement->get_data_type()!=int_data_type&&return_statement->get_data_type()!=double_data_type,"Two or more types of return values",get_line_number()-1);
 		}
 		seq->ast_push_back(return_statement);
+
 	}
 	}
 	
@@ -659,7 +660,7 @@ return_statement :
 	{
 	if (NOT_ONLY_PARSE)
 	{
-		Ast * ret_ast = new Return_Ast(get_line_number());
+		Ast * ret_ast = new Return_Ast(current_procedure->get_proc_name(),get_line_number());
 		ret_ast->set_data_type(void_data_type);
 		$$ = ret_ast;
 	}
@@ -671,7 +672,7 @@ return_statement :
 	{
 		Ast * return_part = $2;
 		CHECK_INVARIANT((return_part!= NULL), "The return_part cannot be null"); 	//TODO
-		Ast * ret_ast = new Return_Ast(return_part,get_line_number());
+		Ast * ret_ast = new Return_Ast(return_part,current_procedure->get_proc_name(),get_line_number());
 		$$  = ret_ast;
 	}
 	}

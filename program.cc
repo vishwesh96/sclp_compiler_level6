@@ -74,8 +74,11 @@ void Program::print()
 	command_options.create_ast_buffer();
   	for(auto it = proc_map.begin();it!=proc_map.end();it++)
 	{
+
 		it->second->print(command_options.get_ast_buffer());
+		
 	}
+
 	// fb.close();
 }
 

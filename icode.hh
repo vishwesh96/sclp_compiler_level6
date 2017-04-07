@@ -323,8 +323,9 @@ public:
 
 class Return_IC_Stmt: public Icode_Stmt
 {
+	string fname;
 public:
-        Return_IC_Stmt(Tgt_Op inst_op);
+        Return_IC_Stmt(Tgt_Op inst_op,string f);
         ~Return_IC_Stmt() {}
 
         Return_IC_Stmt& operator=(const Return_IC_Stmt& rhs);
