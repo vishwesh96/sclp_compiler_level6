@@ -55,6 +55,11 @@ void Mem_Addr_Opd::print_asm_opd(ostream & file_buffer)
 	if (symbol_scope == local)
 	{
 		int offset = symbol_entry->get_start_offset();
+		file_buffer << offset << "($sp)";
+	}
+	if (symbol_scope == formal)
+	{
+		int offset = symbol_entry->get_start_offset();
 		file_buffer << offset << "($fp)";
 	}
 	else

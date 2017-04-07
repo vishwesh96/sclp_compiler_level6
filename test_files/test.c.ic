@@ -1,0 +1,7 @@
+  Procedure: main
+  Intermediate Code Statements
+	load:    	v0 <- a
+	load:    	t0 <- a
+	add:    	t1 <- v0 , t0
+	move:    	v1 <- t1
+	return

@@ -1126,11 +1126,15 @@ variable:
 
 		CHECK_INVARIANT(($1 != NULL), "Variable name cannot be null");
 
-		if (current_procedure->variable_in_symbol_list_check(*$1))
+		if (current_procedure->variable_in_formal_list_check(*$1))
+			var_table_entry = &(current_procedure->get_symbol_table_entry(*$1));
+
+		else if (current_procedure->variable_in_symbol_list_check(*$1))
 			 var_table_entry = &(current_procedure->get_symbol_table_entry(*$1));
 
 		else if (program_object.variable_in_symbol_list_check(*$1))
 			var_table_entry = &(program_object.get_symbol_table_entry(*$1));
+
 
 		else
 			CHECK_INPUT_AND_ABORT(CONTROL_SHOULD_NOT_REACH, "Variable has not been declared", get_line_number());

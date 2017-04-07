@@ -30,9 +30,15 @@ void Program::print_icode()
 }
 void Program::print_assembly()
 {
+
 	command_options.create_output_buffer();
+	std::ostream & file_buffer = command_options.get_output_buffer();
+	file_buffer<<"	.data"<<endl;
+	for(auto it = global_symbol_table.get_table().begin();it!=global_symbol_table.get_table().end();it++){
+		file_buffer<<(*it)->get_variable_name()<<":	.word 0"<<endl;
+	}
   	for(auto it = proc_map.begin();it!=proc_map.end();it++)
 	{
-		it->second->print_assembly(command_options.get_output_buffer());
+		it->second->print_assembly(file_buffer);
 	}	
 }

@@ -1,0 +1,48 @@
+	load:    	v0 <- i
+	load:    	t0 <- size
+	seq:    	t1 <- v0 , t0
+	beq:    	t1 , zero : goto label0
+	goto label1
+
+label0:    	
+	load:    	v0 <- prev_number
+	load:    	t0 <- number
+	add:    	t2 <- v0 , t0
+	store:    	next_num <- t2
+	load:    	v0 <- number
+	store:    	prev_number <- v0
+	load:    	v0 <- next_num
+	store:    	number <- v0
+	load:    	v0 <- i
+	iLoad:    	t0 <- 1
+	add:    	t2 <- v0 , t0
+	store:    	i <- t2
+	load:    	v0 <- prev_number
+	store:    	sp <- v0
+	load:    	t0 <- number
+	store:    	sp <- t0
+	sub:    	sp <- sp , 8
+	call fibonacci
+	add:    	sp <- sp , 8
+	move:    	v0 <- v1
+
+label1:    	
+	iLoad:    	v0 <- 0
+	move:    	v1 <- v0
+return	iLoad:    	v0 <- 0
+	store:    	prev <- v0
+	iLoad:    	v0 <- 1
+	store:    	number <- v0
+	iLoad:    	v0 <- 20
+	store:    	size <- v0
+	iLoad:    	v0 <- 1
+	store:    	i <- v0
+	load:    	v0 <- prev
+	store:    	sp <- v0
+	load:    	t0 <- number
+	store:    	sp <- t0
+	sub:    	sp <- sp , 8
+	call fibonacci
+	add:    	sp <- sp , 8
+	move:    	v0 <- v1
+return

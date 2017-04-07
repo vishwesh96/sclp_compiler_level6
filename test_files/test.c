@@ -1,6 +1,6 @@
-int main(int a);
-main(int a){
-	return ;
+int main(int a,float b);
+main(int a,float b){
+	return a+a;
 }
 
 // f(){

@@ -1015,9 +1015,14 @@ Code_For_Ast & Return_Ast::compile()
 
 Code_For_Ast & Function_Call_Ast::compile()
 {
+
+
+
 	list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
 	Procedure * proc = program_object.get_procedure(fname);
 	list<Symbol_Table_Entry *> formal_entries = proc->get_formal_list().get_table();
+	int offset = 0;
+	string stack = "sp";
 	CHECK_INVARIANT(formal_entries.size()==(*actual_params).size(),"Actual and formal parameter count do not match");
 	auto it = actual_params->begin();
 	auto fit = formal_entries.begin();
@@ -1027,7 +1032,13 @@ Code_For_Ast & Function_Call_Ast::compile()
 		Register_Descriptor * param_load_register = param_stmt.get_reg();
 		Register_Addr_Opd *param_addr = new Register_Addr_Opd(param_load_register);
 
-		Mem_Addr_Opd * variable = new Mem_Addr_Opd(**fit);
+		Symbol_Table_Entry * ste = new Symbol_Table_Entry(stack, void_data_type, 0, sp_ref);
+		ste->set_symbol_scope(formal);
+		ste->set_data_type((*fit)->get_data_type());
+		ste->set_start_offset(offset);
+
+
+		Mem_Addr_Opd * variable = new Mem_Addr_Opd(*ste);
 		Move_IC_Stmt *stmt;
 		if((*fit)->get_data_type()==int_data_type){
 			stmt = new Move_IC_Stmt(store,param_addr,variable);
@@ -1035,6 +1046,7 @@ Code_For_Ast & Function_Call_Ast::compile()
 		else if((*fit)->get_data_type()==double_data_type){
 			stmt = new Move_IC_Stmt(store_d,param_addr,variable);
 		} 
+		param_load_register->set_use_for_expr_result();
 		// if (command_options.is_do_lra_selected() == false)
 		// 	variable_symbol_entry->free_register(store_register);
 
@@ -1043,13 +1055,26 @@ Code_For_Ast & Function_Call_Ast::compile()
 		// 	variable_symbol_entry->update_register(store_register);
 		// 	store_register->reset_use_for_expr_result();
 		// }
+		offset-=4;
 		if (param_stmt.get_icode_list().empty() == false)
 			ic_list.splice(ic_list.end(), param_stmt.get_icode_list());
 		ic_list.push_back(stmt);	
 	}
-	Register_Descriptor * return_val_reg = node_data_type==int_data_type?machine_desc_object.spim_register_table[v1]:machine_desc_object.spim_register_table[f0];
+
+
+
+	Ics_Opd * stack_reg = new Register_Addr_Opd(machine_desc_object.spim_register_table[sp]);
+	Const_Opd<int> * offset_opd = new Const_Opd<int>(-offset);
+
+	Compute_IC_Stmt * sub_stmt =  new Compute_IC_Stmt(sub, stack_reg , offset_opd, stack_reg);
+	ic_list.push_back(sub_stmt);
+
 	Function_Call_IC_Stmt *call_stmt = new Function_Call_IC_Stmt(jal,fname); 
 	ic_list.push_back(call_stmt);	
+
+	Compute_IC_Stmt * add_stmt =  new Compute_IC_Stmt(add, stack_reg ,offset_opd, stack_reg);
+	ic_list.push_back(add_stmt);
+
 	Tgt_Op ret_move_op;
 	if(node_data_type == int_data_type){
 		ret_move_op = mov;
@@ -1061,6 +1086,9 @@ Code_For_Ast & Function_Call_Ast::compile()
 		Move_IC_Stmt* move_ret = new Move_IC_Stmt(ret_move_op,new Register_Addr_Opd(machine_desc_object.spim_register_table[v1]),new Register_Addr_Opd(machine_desc_object.spim_register_table[v0]));	
 		ic_list.push_back(move_ret);
 	}
+
+	Register_Descriptor * return_val_reg = node_data_type==int_data_type?machine_desc_object.spim_register_table[v1]:machine_desc_object.spim_register_table[f0];
+
 	Code_For_Ast * function_stmt = new Code_For_Ast();
 	if (ic_list.empty() == false)
 		function_stmt = new Code_For_Ast(ic_list, return_val_reg);
@@ -1068,3 +1096,4 @@ Code_For_Ast & Function_Call_Ast::compile()
 	return *function_stmt;
 
 }
+
