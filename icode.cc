@@ -648,3 +648,35 @@ void Function_Call_IC_Stmt::print_assembly(ostream & file_buffer)
 {
 	file_buffer<<"\t"<<"jal "<<fname<<endl;
 }
+
+Print_IC_Stmt::Print_IC_Stmt(Tgt_Op op,Icode_Stmt * is, int s_key, Data_Type d);
+{
+	CHECK_INVARIANT((machine_desc_object.spim_instruction_table[op] != NULL),
+			"Instruction description in spim table cannot be null");
+	op_desc = *(machine_desc_object.spim_instruction_table[op]);
+	stmt = is;
+	string_key = s_key;
+	dt = d;
+}
+Print_IC_Stmt::~Print_IC_Stmt()
+{
+
+}
+        // Icode_Stmt * get_stmt();
+        // void set_stmt(Icode_Stmt * io);
+
+        // int get_key();
+        // void set_key(int * k);
+
+        // Data_Type get_data_type();
+        // void set_data_type(Data_Type dt);
+
+void Print_IC_Stmt::print_icode(ostream & file_buffer)
+{
+
+}
+void Print_IC_Stmt::print_assembly(ostream & file_buffer)
+{
+
+}
+

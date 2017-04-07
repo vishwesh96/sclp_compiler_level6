@@ -309,6 +309,28 @@ class Function_Call_Ast : public Ast
 		void print_assembly(ostream & file_buffer);
 };
 
+class Print_Ast : public Ast
+{
+	int string_key;
+	Ast * expr;
+	bool is_string;
+
+	public:
+		Print_Ast(int  s_key,int line);
+		Print_Ast(Ast  *expr,int line);
+		Print_Ast();
+		~Print_Ast();
+
+		Data_Type get_data_type();
+		void set_data_type(Data_Type dt);
+
+		// void print(ostream & file_buffer);
+
+		Code_For_Ast & compile();
+		void print_icode(ostream & file_buffer);
+		void print_assembly(ostream & file_buffer);
+};
+
 class Sequence_Ast: public Ast{
 	list<Ast *> statement_list;
 	list<Icode_Stmt *> sa_icode_list;

@@ -27,11 +27,13 @@
 %token <integer_value> INTEGER_NUMBER
 %token <float_value> DOUBLE_NUMBER
 %token <string_value> NAME
+%token <string_value> STRING
 %token INTEGER FLOAT
 %token ASSIGN VOID
 %token IF 
 %token WHILE DO 
 %token RETURN
+%token PRINT
 
 %nonassoc THEN
 %nonassoc ELSE
@@ -77,8 +79,10 @@
 
 %type <ast> return_statement
 %type <ast> function_call_statement
+%type <ast> function_call_assignment_statement
 %type <ast> function_call
 
+%type <ast> print_statement
  
 //ADD CODE HERE
 
@@ -648,6 +652,22 @@ statement :
 	}
 	}
 |
+	function_call_assignment_statement
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = $1;
+	}
+	}
+|
+	print_statement
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		$$ = $1;
+	}
+	}
+|
 	'{' statement_list '}'
 	{
 	if(NOT_ONLY_PARSE)
@@ -668,6 +688,44 @@ function_call_statement :
 	}
 ;
 
+function_call_assignment_statement :
+	variable ASSIGN function_call ';'
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		Ast * lhs = $1;
+		Ast * rhs = $3;
+		Ast * assignment_ast = new Assignment_Ast(lhs,rhs,get_line_number());
+		assignment_ast->check_ast();
+		$$ = assignment_ast; //TODO
+	}
+	}
+;
+print_statement :
+	PRINT '(' arith_expression ')' ';'
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		Ast * expr = $3;
+		Ast * print_ast = new Print_Ast(expr,get_line_number());
+		$$ = print_ast;
+	}
+	}
+|
+	PRINT '(' STRING ')' ';'
+	{
+	if(NOT_ONLY_PARSE)
+	{
+		string  str = *$2;
+		int key = string_map.size();
+		string_map[key] = str;
+		cout<<str;
+		Ast * print_ast = New Print_Ast(key,get_line_number());
+		$$ = print_ast;
+	}
+	}
+
+;
 return_statement :
 	RETURN ';' 
 	{
@@ -1105,15 +1163,6 @@ expression_term:
 	if (NOT_ONLY_PARSE)
 	{
 		//ADD CODE HERE
-
-		$$ = $1;
-	}
-	}
-| 
-	function_call
-	{
-	if(NOT_ONLY_PARSE)
-	{
 		$$ = $1;
 	}
 	}

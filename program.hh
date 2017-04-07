@@ -10,6 +10,7 @@ using namespace std;
 class Program;
 
 extern Program program_object;
+extern std::map<int,string> string_map;
 
 class Program
 {

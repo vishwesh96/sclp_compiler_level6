@@ -104,14 +104,24 @@ fl (((({number})\.({number}))|(\.{number})|({number}\.))(([eE][+-]?{number})?))|
 		return Parser::WHILE;
 	}
 
+"print"	{
+		store_token_name("PRINT");
+		return Parser::PRINT;
+	}
 
-	
-
- "return" {
+"return" {
  		// printf("return found\n");
  		store_token_name("RETURN");
  		return Parser::RETURN;
  	 }
+
+\"(\\.|[^"])*\" {
+ 		ParserBase::STYPE__ *val = getSval();      
+		std::string * matched_str = new string(matched()); 	
+		val -> string_value = matched_str;
+		store_token_name("STRING");
+		return Parser::STRING; 
+ 		}
 			
 {identifier} {
 		// std::cout<<"identifier found "<<matched()<<endl;

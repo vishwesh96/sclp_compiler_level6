@@ -356,6 +356,34 @@ public:
         void print_icode(ostream & file_buffer);
         void print_assembly(ostream & file_buffer);
 };
+
+class Print_IC_Stmt : public Icode_Stmt
+{
+	Icode_Stmt * stmt;
+	int string_key;
+	Data_Type dt;
+
+	public:	
+        Print_IC_Stmt(Tgt_Op inst_op,Icode_Stmt * is, int s_key, Data_Type d=void_data_type);
+        ~Print_IC_Stmt() {}
+
+        Print_IC_Stmt& operator=(const Print_IC_Stmt& rhs);
+
+        Instruction_Descriptor & get_inst_op_of_ics();
+
+        Icode_Stmt * get_stmt();
+        void set_stmt(Icode_Stmt * io);
+
+        int get_key();
+        void set_key(int * k);
+
+        Data_Type get_data_type();
+        void set_data_type(Data_Type dt);
+
+        void print_icode(ostream & file_buffer);
+        void print_assembly(ostream & file_buffer);
+
+};
 //////////////////////// Intermediate code for Ast statements ////////////////////////
 
 class Code_For_Ast

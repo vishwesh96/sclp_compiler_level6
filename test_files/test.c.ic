@@ -1,0 +1,11 @@
+	iLoad.d:    	f2 <- 1.00
+	store.d:    	sp <- f2
+	iLoad:    	v0 <- 1
+	store:    	sp <- v0
+	sub:    	sp <- sp , 8
+	call main
+	add:    	sp <- sp , 8
+	move:    	v0 <- v1
+	iLoad:    	v0 <- 1
+	move:    	v1 <- v0
+return

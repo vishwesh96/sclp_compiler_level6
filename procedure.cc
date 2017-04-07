@@ -87,14 +87,14 @@ Symbol_Table_Entry & Procedure::get_symbol_table_entry(string variable_name)
 
 void Procedure::print(ostream & file_buffer)
 {
-
-	sequence_ast->print(file_buffer);
+	if(sequence_ast!=NULL)
+		sequence_ast->print(file_buffer);
 }
 
 
 void Procedure::print_sym(ostream & file_buffer)
 {
-	local_symbol_table.print(file_buffer);
+	// local_symbol_table.print(file_buffer);
 }
 
 

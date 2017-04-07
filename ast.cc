@@ -674,7 +674,9 @@ void Sequence_Ast::print(ostream &file_buffer)
 	//GOWTHAM
 
 	file_buffer<<"\n      Sequence Ast:\n";
+
 	for(std::list<Ast *>::iterator it = statement_list.begin();it!=statement_list.end();it++){
+
 		(*it)->print(file_buffer);
 	}
 
@@ -722,6 +724,20 @@ void Return_Ast::set_data_type(Data_Type dt)
 	node_data_type = dt;
 }
 
+Print_Ast::Print_Ast(int s_key,int line){
+	string_key = s_key;
+	node_data_type = void_data_type;
+	lineno = line;
+	is_string = true;
+	expr = NULL;
+}
+
+Print_Ast::Print_Ast(Ast * e,int line){
+	expr = e;
+	node_data_type = expr->get_data_type();
+	lineno = line
+	is_string = false;
+}
 
 Function_Call_Ast::Function_Call_Ast(string f,list<Ast*> *l, int line)
 {
@@ -729,6 +745,15 @@ Function_Call_Ast::Function_Call_Ast(string f,list<Ast*> *l, int line)
 	node_data_type = program_object.get_procedure(fname)->get_return_type();
 	actual_params = l;
 	lineno = line;
+}
+
+Data_Type Print_Ast::get_data_type(){
+	return node_data_type;
+}
+
+void Print_Ast::set_data_type(Data_Type dt)
+{
+	node_data_type = dt;
 }
 
 Function_Call_Ast::Function_Call_Ast(string f, int line)

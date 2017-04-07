@@ -11,6 +11,7 @@
 using namespace std;
 
 Program program_object;
+std::map<int, string> string_map;
 
 Program::Program()
 {

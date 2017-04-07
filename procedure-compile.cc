@@ -11,19 +11,22 @@
 
 void Procedure::compile()
 {
-	// if(is_proc_defined())	
+	if(is_proc_defined())	
 		sequence_ast->compile();
+
 
 }
 void Procedure::print_icode(ostream & file_buffer)
 {
-	sequence_ast->print_icode(file_buffer);
+	if(is_proc_defined())	
+		sequence_ast->print_icode(file_buffer);
 
 }
 void Procedure::print_assembly(ostream & file_buffer)
 {
 	print_prologue(file_buffer);
-	sequence_ast->print_assembly(file_buffer);
+	if(is_proc_defined())	
+		sequence_ast->print_assembly(file_buffer);
 	print_epilogue(file_buffer);
 }
 

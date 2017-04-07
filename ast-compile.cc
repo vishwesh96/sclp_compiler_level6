@@ -1097,3 +1097,19 @@ Code_For_Ast & Function_Call_Ast::compile()
 
 }
 
+
+Code_For_Ast & Print_Ast::compile()
+{
+	if(is_string){
+		list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
+		Print_IC_Stmt * print_string =  new Print_IC_Stmt(syscall, NULL, string_key);
+		ic_list.push_back(print_string);
+		Code_For_Ast * print_stmt = new Code_For_Ast();
+		if (ic_list.empty() == false)
+			print_stmt = new Code_For_Ast(ic_list, NULL);
+		return *print_stmt;
+	}
+	else{
+		
+	}
+}
