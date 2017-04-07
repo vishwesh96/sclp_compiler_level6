@@ -275,8 +275,8 @@ class Return_Ast : public Ast
 	Ast * lhs;
 
 	public:
-		Return_Ast(Ast * l);
-		Return_Ast();
+		Return_Ast(Ast * l,int line);
+		Return_Ast(int line);
 		~Return_Ast();
 
 		Data_Type get_data_type();
@@ -284,8 +284,9 @@ class Return_Ast : public Ast
 		void set_data_type(Data_Type dt);
 
 		void print(ostream & file_buffer);
-
 		Code_For_Ast & compile();
+		void print_icode(ostream & file_buffer);
+		void print_assembly(ostream & file_buffer);
 };
 
 class Function_Call_Ast : public Ast
@@ -304,6 +305,8 @@ class Function_Call_Ast : public Ast
 		void print(ostream & file_buffer);
 
 		Code_For_Ast & compile();
+		void print_icode(ostream & file_buffer);
+		void print_assembly(ostream & file_buffer);
 };
 
 class Sequence_Ast: public Ast{

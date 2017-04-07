@@ -323,23 +323,38 @@ public:
 
 class Return_IC_Stmt: public Icode_Stmt
 {
-	Ics_Opd * opd;   
-
 public:
-        Return_IC_Stmt(Tgt_Op inst_op, Ics_Opd * opd);
+        Return_IC_Stmt(Tgt_Op inst_op);
         ~Return_IC_Stmt() {}
 
         Return_IC_Stmt& operator=(const Return_IC_Stmt& rhs);
 
         Instruction_Descriptor & get_inst_op_of_ics();
 
-        Ics_Opd * get_opd();
-        void set_opd(Ics_Opd * io);
+        // Ics_Opd * get_opd();
+        // void set_opd(Ics_Opd * io);
 
         void print_icode(ostream & file_buffer);
         void print_assembly(ostream & file_buffer);
 };
 
+class Function_Call_IC_Stmt: public Icode_Stmt
+{
+	string fname;
+public:
+        Function_Call_IC_Stmt(Tgt_Op inst_op,string f);
+        ~Function_Call_IC_Stmt() {}
+
+        Function_Call_IC_Stmt& operator=(const Return_IC_Stmt& rhs);
+
+        Instruction_Descriptor & get_inst_op_of_ics();
+
+        // Ics_Opd * get_opd();
+        // void set_opd(Ics_Opd * io);
+
+        void print_icode(ostream & file_buffer);
+        void print_assembly(ostream & file_buffer);
+};
 //////////////////////// Intermediate code for Ast statements ////////////////////////
 
 class Code_For_Ast

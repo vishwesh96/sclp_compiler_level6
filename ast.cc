@@ -691,7 +691,7 @@ Sequence_Ast::~Sequence_Ast()
 Return_Ast::Return_Ast(Ast * l, int line)
 {
 	lineno = line;
-	node_data_type = l->node_data_type;
+	node_data_type = l->get_data_type();
 	lhs = l;
 }
 
@@ -704,7 +704,7 @@ Return_Ast::Return_Ast(int line)
 
 Return_Ast::~Return_Ast()
 {
-	free lhs;
+	free(lhs);
 }
 
 Data_Type Return_Ast::get_data_type()
@@ -725,7 +725,7 @@ void Return_Ast::set_data_type(Data_Type dt)
 Function_Call_Ast::Function_Call_Ast(string f,list<Ast*> *l, int line)
 {
 	fname = f;
-	node_data_type = program_object.get_procedure(fname)->get_data_type();
+	node_data_type = program_object.get_procedure(fname)->get_return_type();
 	actual_params = l;
 	lineno = line;
 }
@@ -733,7 +733,7 @@ Function_Call_Ast::Function_Call_Ast(string f,list<Ast*> *l, int line)
 Function_Call_Ast::Function_Call_Ast(string f, int line)
 {
 	fname = f;
-	node_data_type = program_object.get_procedure(fname)->get_data_type();
+	node_data_type = program_object.get_procedure(fname)->get_return_type();
 	lineno = line;
 	actual_params = NULL;
 }
@@ -751,4 +751,15 @@ Data_Type Function_Call_Ast::get_data_type()
 void Function_Call_Ast::set_data_type(Data_Type dt)
 {
 	node_data_type = dt;
+}
+
+void Return_Ast::print(ostream & file_buffer)
+{
+	file_buffer<<"\n"<<setw(20)<<"RETURN\n";
+	lhs->print(file_buffer);
+}
+
+void Function_Call_Ast::print(ostream & file_buffer)
+{
+
 }

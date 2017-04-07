@@ -1,9 +1,0 @@
-  Procedure: main
-  Intermediate Code Statements
-	load:    	v0 <- a
-	iLoad:    	t0 <- 1
-	add:    	t1 <- v0 , t0
-	store:    	a <- t1
-	load:    	v0 <- a
-	move:    	v1 <- v0
-	return

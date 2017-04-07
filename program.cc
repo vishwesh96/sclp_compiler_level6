@@ -30,13 +30,13 @@ void Program::delete_all()
 	proc_map.clear();
 }
 
-void Program::add_procedure(Procedure * proc, int line)
+void Program::insert_procedure(Procedure * proc, int line)
 {
 	//TODO6
-	if(procedure!=NULL)
+	if(proc!=NULL)
 	{
 		string proc_name = proc->get_proc_name();
-		CHECK_INPUT_AND_ABORT((proc_map.find(proc_name) == proc_map.end()),"Overloading..Procedure already declared"); // This ideally should not happen
+		// CHECK_INPUT_AND_ABORT((proc_map.find(proc_name) == proc_map.end()),"Overloading..Procedure already declared",line); // This ideally should not happen
 		proc_map[proc_name] = proc;
 	}
 }
@@ -56,8 +56,14 @@ Symbol_Table_Entry & Program::get_symbol_table_entry(string variable)
 void Program::print_sym()
 {
 	//TODO6
-	global_symbol_table.print();
-	procedure->print_sym();
+	// global_symbol_table.print();
+	command_options.create_output_buffer();
+  	for(auto it = proc_map.begin();it!=proc_map.end();it++)
+	{
+		it->second->print(command_options.get_output_buffer());
+		cout<<endl;
+	}
+
 }
 
 void Program::print()
@@ -65,11 +71,17 @@ void Program::print()
 
 	//TODO6
 	// check at last
-	for(auto it = proc_map.begin();it!=proc_map.end();it++)
+	command_options.create_ast_buffer();
+  	for(auto it = proc_map.begin();it!=proc_map.end();it++)
 	{
-		it->second->print();
-		cout<<endl;
+		it->second->print(command_options.get_ast_buffer());
 	}
+	// fb.close();
+}
+
+Procedure * Program::get_procedure(string proc_name)
+{
+	return proc_map[proc_name];
 }
 
 
@@ -89,3 +101,4 @@ bool Program::variable_in_proc_map_check(string variable)
 {
 	return (proc_map.find(variable) != proc_map.end());
 }
+

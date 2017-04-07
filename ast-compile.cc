@@ -909,7 +909,6 @@ Code_For_Ast & UMinus_Ast::compile()
 
 Code_For_Ast & Sequence_Ast::compile()
 {
-
 	for(std::list<Ast *>::iterator it = statement_list.begin();it!=statement_list.end();it++){
 		Code_For_Ast & stmt = (*it)->compile();
 		Register_Descriptor * reg = stmt.get_reg();
@@ -918,6 +917,7 @@ Code_For_Ast & Sequence_Ast::compile()
 			sa_icode_list.splice(sa_icode_list.end(), stmt.get_icode_list());
 		}
 	}
+
 	Code_For_Ast * seq_stmt = new Code_For_Ast();
 	if (sa_icode_list.empty() == false){
 		seq_stmt = new Code_For_Ast(sa_icode_list, NULL);
@@ -948,23 +948,19 @@ void Sequence_Ast::print_icode(ostream & file_buffer)
 template class Number_Ast<double>;
 template class Number_Ast<int>;
 
-void Return_Ast::print(ostream & file_buffer)
-{
-	
-}
 
 Code_For_Ast & Return_Ast::compile()
 {
+	machine_desc_object.clear_local_register_mappings();	//TODO6
 	if(lhs==NULL){
 		list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
 		Tgt_Op ic_operator = ret_inst;
-		Return_IC_Stmt * stmt = new Return_IC_Stmt(ic_operator,NULL);
+		Return_IC_Stmt * stmt = new Return_IC_Stmt(ic_operator);
 		ic_list.push_back(stmt);
-
 		Code_For_Ast * return_stmt = new Code_For_Ast();
 		if (ic_list.empty() == false)
 			return_stmt = new Code_For_Ast(ic_list, NULL);
-		return return_stmt;
+		return *return_stmt;
 	}
 	else{
 		Code_For_Ast & lhs_stmt = lhs->compile();
@@ -973,50 +969,103 @@ Code_For_Ast & Return_Ast::compile()
 
 		//GOWTHAM : check NULL
 		Register_Addr_Opd *lhs_addr = new Register_Addr_Opd(lhs_load_register);
-		Tgt_Op ic_operator = ret_inst;	
 
 		if(node_data_type == int_data_type){
-			const Register_Use_Category reg_type = fn_result;
-			Register_Descriptor* load_register =  machine_desc_object.get_new_register<reg_type>();	
+			Register_Descriptor* move_register =  machine_desc_object.spim_register_table[v1];	
+			// Register_Descriptor* move_register =  machine_desc_object.get_new_register<gp_data>();	
 			// if(load_register!=NULL) load_register->set_use_for_expr_result();
 			if(lhs_load_register!=NULL) lhs_load_register->reset_use_for_expr_result();
-
+			Tgt_Op ic_operator = mov;	
+			Register_Addr_Opd * reg = new Register_Addr_Opd(move_register);
+			Move_IC_Stmt * stmt = new Move_IC_Stmt(ic_operator,lhs_addr,reg);
+			Return_IC_Stmt * ret_stmt = new Return_IC_Stmt(ret_inst);
 			list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
 			if (lhs_stmt.get_icode_list().empty() == false)
 				ic_list = lhs_stmt.get_icode_list();
 			ic_list.push_back(stmt);	
+			ic_list.push_back(ret_stmt);
 			Code_For_Ast * return_stmt = new Code_For_Ast();
 			if (ic_list.empty() == false)
-				return_stmt = new Code_For_Ast(ic_list, load_register);
+				return_stmt = new Code_For_Ast(ic_list, move_register);
 			return *return_stmt;
 }
 	else if(node_data_type == double_data_type){
-		const Register_Use_Category reg_type = fn_result;
-		Register_Descriptor* load_register =  machine_desc_object.get_new_register<reg_type>();	
+		Register_Descriptor* move_register =  machine_desc_object.spim_register_table[f0];	
+		// Register_Descriptor* move_register =  machine_desc_object.get_new_register<gp_data>();	
 		if(lhs_load_register!=NULL)	lhs_load_register->reset_use_for_expr_result();
-		Register_Addr_Opd * reg = new Register_Addr_Opd(load_register);
+		Tgt_Op ic_operator = move_d;	//TODO6
+		Register_Addr_Opd * reg = new Register_Addr_Opd(move_register);
 		Move_IC_Stmt * stmt = new Move_IC_Stmt(ic_operator,lhs_addr,reg);
+		Return_IC_Stmt * ret_stmt = new Return_IC_Stmt(ret_inst);
 		list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
 		if (lhs_stmt.get_icode_list().empty() == false)
 			ic_list = lhs_stmt.get_icode_list();
 		ic_list.push_back(stmt);	
-		Code_For_Ast * uminus_stmt = new Code_For_Ast();
+		ic_list.push_back(ret_stmt);
+		Code_For_Ast * return_stmt = new Code_For_Ast();
 		if (ic_list.empty() == false)
-			uminus_stmt = new Code_For_Ast(ic_list, load_register);
-		return *uminus_stmt;
+			return_stmt = new Code_For_Ast(ic_list, move_register);
+		return *return_stmt;
 	}
 
 	}
 
 }
 
-
-void Function_Call_Ast::print(ostream & file_buffer)
-{
-
-}
 
 Code_For_Ast & Function_Call_Ast::compile()
 {
+	list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
+	Procedure * proc = program_object.get_procedure(fname);
+	list<Symbol_Table_Entry *> formal_entries = proc->get_formal_list().get_table();
+	CHECK_INVARIANT(formal_entries.size()==(*actual_params).size(),"Actual and formal parameter count do not match");
+	auto it = actual_params->begin();
+	auto fit = formal_entries.begin();
+	for(; it!= actual_params->end(); it++, fit++){			//TODO6
+
+		Code_For_Ast & param_stmt = (*it)->compile();
+		Register_Descriptor * param_load_register = param_stmt.get_reg();
+		Register_Addr_Opd *param_addr = new Register_Addr_Opd(param_load_register);
+
+		Mem_Addr_Opd * variable = new Mem_Addr_Opd(**fit);
+		Move_IC_Stmt *stmt;
+		if((*fit)->get_data_type()==int_data_type){
+			stmt = new Move_IC_Stmt(store,param_addr,variable);
+		}
+		else if((*fit)->get_data_type()==double_data_type){
+			stmt = new Move_IC_Stmt(store_d,param_addr,variable);
+		} 
+		// if (command_options.is_do_lra_selected() == false)
+		// 	variable_symbol_entry->free_register(store_register);
+
+		// else
+		// {
+		// 	variable_symbol_entry->update_register(store_register);
+		// 	store_register->reset_use_for_expr_result();
+		// }
+		if (param_stmt.get_icode_list().empty() == false)
+			ic_list.splice(ic_list.end(), param_stmt.get_icode_list());
+		ic_list.push_back(stmt);	
+	}
+	Register_Descriptor * return_val_reg = node_data_type==int_data_type?machine_desc_object.spim_register_table[v1]:machine_desc_object.spim_register_table[f0];
+	Function_Call_IC_Stmt *call_stmt = new Function_Call_IC_Stmt(jal,fname); 
+	ic_list.push_back(call_stmt);	
+	Tgt_Op ret_move_op;
+	cout<<"A"<<endl;
+	if(node_data_type == int_data_type){
+		ret_move_op = mov;
+		Move_IC_Stmt* move_ret = new Move_IC_Stmt(ret_move_op,new Register_Addr_Opd(machine_desc_object.spim_register_table[v1]),new Register_Addr_Opd(machine_desc_object.spim_register_table[v0]));	
+		ic_list.push_back(move_ret);
+	}
+	else if(node_data_type == double_data_type){
+		ret_move_op = move_d;
+		Move_IC_Stmt* move_ret = new Move_IC_Stmt(ret_move_op,new Register_Addr_Opd(machine_desc_object.spim_register_table[v1]),new Register_Addr_Opd(machine_desc_object.spim_register_table[v0]));	
+		ic_list.push_back(move_ret);
+	}
+	Code_For_Ast * function_stmt = new Code_For_Ast();
+	if (ic_list.empty() == false)
+		function_stmt = new Code_For_Ast(ic_list, return_val_reg);
+
+	return *function_stmt;
 
 }

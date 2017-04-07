@@ -39,6 +39,7 @@ public:
 	// compile
 	void compile();
 	void print_assembly();
+	void print_icode();
 };
 
 #endif

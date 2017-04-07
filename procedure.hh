@@ -19,7 +19,7 @@ class Procedure
 	string name;
 	Symbol_Table local_symbol_table;
 	Sequence_Ast * sequence_ast;
-	Symbol_Table param_symbol_table;
+	Symbol_Table formal_symbol_table;
 	bool is_defined;
 	int lineno;
 

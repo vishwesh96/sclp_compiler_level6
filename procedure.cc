@@ -12,10 +12,9 @@ using namespace std;
 
 Procedure::Procedure(Data_Type proc_return_type, string proc_name, int line)
 {
-	this.return_type = proc_return_type;
-	this.name = proc_name;
-	this.lineno = line
-
+	this->return_type = proc_return_type;
+	this->name = proc_name;
+	this->lineno = line;
 }
 
 Procedure::~Procedure()
@@ -32,11 +31,12 @@ void Procedure::set_formal_list(Symbol_Table & new_list)
 {
 	formal_symbol_table = new_list;
 	formal_symbol_table.set_table_scope(formal);
-	// formal_symbol_table.se
+	formal_symbol_table.set_start_offset_of_first_symbol(8);
+	formal_symbol_table.assign_offsets();
 
 }
 
-bool variable_in_formal_list_check(string variable)
+bool Procedure::variable_in_formal_list_check(string variable)
 {
 	return formal_symbol_table.variable_in_formal_list_check(variable);
 }
@@ -56,6 +56,7 @@ void Procedure::set_local_list(Symbol_Table & new_list)
 {
 	local_symbol_table = new_list;
 	local_symbol_table.set_table_scope(local);
+	local_symbol_table.assign_offsets();
 }
 
 Data_Type Procedure::get_return_type()
@@ -80,6 +81,7 @@ void Procedure::print(ostream & file_buffer)
 	sequence_ast->print(file_buffer);
 }
 
+
 void Procedure::print_sym(ostream & file_buffer)
 {
 	local_symbol_table.print(file_buffer);
@@ -91,3 +93,8 @@ bool Procedure::variable_in_symbol_list_check(string variable)
 	return local_symbol_table.variable_in_symbol_list_check(variable);
 }
 
+
+Symbol_Table Procedure::get_formal_list()
+{
+	return formal_symbol_table;
+}

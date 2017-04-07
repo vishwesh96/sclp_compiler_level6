@@ -49,7 +49,7 @@ void Mem_Addr_Opd::print_asm_opd(ostream & file_buffer)
 {
 	Table_Scope symbol_scope = symbol_entry->get_symbol_scope();
 
-	CHECK_INVARIANT(((symbol_scope == local) || (symbol_scope == global)), 
+	CHECK_INVARIANT(((symbol_scope == local) || (symbol_scope == global) || (symbol_scope == formal)), 
 			"Wrong scope value");
 
 	if (symbol_scope == local)
@@ -513,6 +513,8 @@ void Label_IC_Stmt::print_assembly(ostream & file_buffer)
 	}
 }
 
+
+
 /******************************* Class Code_For_Ast ****************************/
 
 Code_For_Ast::Code_For_Ast()
@@ -594,3 +596,49 @@ Instruction_Descriptor::Instruction_Descriptor()
 
 template class Const_Opd<int>;
 template class Const_Opd<double>;
+
+
+Return_IC_Stmt::Return_IC_Stmt(Tgt_Op op)
+{
+	CHECK_INVARIANT((machine_desc_object.spim_instruction_table[op] != NULL),
+			"Instruction description in spim table cannot be null");
+	op_desc = *(machine_desc_object.spim_instruction_table[op]);
+}
+
+Return_IC_Stmt& Return_IC_Stmt::operator=(const Return_IC_Stmt& rhs)
+{
+
+}
+
+Instruction_Descriptor & Return_IC_Stmt::get_inst_op_of_ics()
+{
+	
+}
+
+void Return_IC_Stmt::print_icode(ostream & file_buffer)
+{
+	file_buffer<<"return";
+}
+
+void Return_IC_Stmt::print_assembly(ostream & file_buffer)
+{
+	file_buffer<<"\t"<<"j\t"<<"$31"<<endl;
+}
+
+Function_Call_IC_Stmt::Function_Call_IC_Stmt(Tgt_Op op,string f)
+{
+	CHECK_INVARIANT((machine_desc_object.spim_instruction_table[op] != NULL),
+			"Instruction description in spim table cannot be null");
+	op_desc = *(machine_desc_object.spim_instruction_table[op]);
+	fname = f;
+
+}
+void Function_Call_IC_Stmt::print_icode(ostream & file_buffer)
+{
+	file_buffer<<"\t"<<"call "<<fname<<endl;
+}
+
+void Function_Call_IC_Stmt::print_assembly(ostream & file_buffer)
+{
+	file_buffer<<"\t"<<"jal "<<fname<<endl;
+}
