@@ -986,7 +986,7 @@ Code_For_Ast & Return_Ast::compile()
 			Move_IC_Stmt * stmt = new Move_IC_Stmt(ic_operator,lhs_addr,reg);
 			Return_IC_Stmt * ret_stmt = new Return_IC_Stmt(ret_inst,fname);
 			list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
-			reg->reset_use_for_expr_result();
+			// move_register->reset_use_for_expr_result();
 			if (lhs_stmt.get_icode_list().empty() == false)
 				ic_list = lhs_stmt.get_icode_list();
 			ic_list.push_back(stmt);	
@@ -1005,7 +1005,7 @@ Code_For_Ast & Return_Ast::compile()
 		Move_IC_Stmt * stmt = new Move_IC_Stmt(ic_operator,lhs_addr,reg);
 		Return_IC_Stmt * ret_stmt = new Return_IC_Stmt(ret_inst,fname);
 		list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
-		reg->reset_use_for_expr_result();
+		// move_register->reset_use_for_expr_result();
 		if (lhs_stmt.get_icode_list().empty() == false)
 			ic_list = lhs_stmt.get_icode_list();
 		ic_list.push_back(stmt);	

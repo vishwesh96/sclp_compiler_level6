@@ -26,6 +26,8 @@ fibonacci (int prev_number, int number)
       number=next_num;
       i = i+1; 
       fibonacci (prev_number,number); 
+      print(number);
+      print("\n");
     }
     return 0;
 }

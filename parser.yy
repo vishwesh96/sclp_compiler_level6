@@ -238,7 +238,8 @@ procedure_definition:
 			"Procedure name cannot be same as global variable", get_line_number());
 
 		Procedure * proc = program_object.get_procedure(proc_name);
-		CHECK_INPUT(proc!=NULL,"Procedure corresponding to the name is not found",get_line_number());		
+		CHECK_INPUT(proc!=NULL,"Procedure corresponding to the name is not found",get_line_number());	
+
 		current_procedure = proc;			//set current procedure
 		if(current_procedure!=NULL){
 			CHECK_INPUT(!proc->is_proc_defined(),"Procedure has already been defined before",get_line_number());
@@ -251,7 +252,6 @@ procedure_definition:
 			// CHECK_INPUT ((*definition_table)==declaration_table,"Parameters in prototype and definition are not matching", get_line_number());		
 			(*definition_table)==declaration_table;		
 		}
-
 	}
 	}
 
@@ -283,7 +283,6 @@ procedure_definition:
 	if (NOT_ONLY_PARSE)
 	{
 		if(current_procedure!=NULL){
-
 			string proc_name = *$1;
 			Sequence_Ast* seq = $9;
 			// CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");
@@ -306,6 +305,7 @@ procedure_definition:
 			}
 			seq->ast_push_back(return_statement);
 		}
+
 	}
 	}
 	
@@ -1048,6 +1048,7 @@ arith_expression:
 	{
 		Ast * lhs = $1;
 		Ast * rhs = $3;
+		if(lhs == NULL)
 		Ast * ast = new Plus_Ast(lhs,rhs,get_line_number());
 		ast->check_ast();		
 		$$ = ast;
@@ -1182,7 +1183,7 @@ function_call:
 		CHECK_INVARIANT((fname != NULL), "Function call name cannot be null");
 
 		Procedure * proc = program_object.get_procedure(*fname);
-		CHECK_INPUT(proc!=NULL,"Procedure corresponding to the name is not found",get_line_number());		
+		CHECK_INPUT(proc!=NULL,"Procedure corresponding to the name is not found",get_line_number());	
 		bool valid = true;
 		if(proc==NULL)
 			valid = false;
@@ -1207,7 +1208,6 @@ function_call:
 			
 			}
 		}	
-
 		if(valid){
 			Ast * function_call_ast;
 			if(actual_parameters_list==NULL){
