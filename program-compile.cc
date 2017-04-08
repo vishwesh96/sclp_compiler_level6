@@ -34,6 +34,7 @@ void Program::print_assembly()
 	command_options.create_output_buffer();
 	std::ostream & file_buffer = command_options.get_output_buffer();
 	if((global_symbol_table.get_table().begin() != global_symbol_table.get_table().end()) || (string_map.begin()!=string_map.end())){
+		cout<<endl;
 		file_buffer<<"	.data"<<endl;
 	}
 	for(auto it = global_symbol_table.get_table().begin();it!=global_symbol_table.get_table().end();it++){

@@ -11,7 +11,8 @@
 using namespace std;
 
 Program program_object;
-std::map<int, string> string_map;
+map<int, string> string_map;
+list<Procedure*> called_procedures;
 
 Program::Program()
 {
@@ -97,7 +98,9 @@ bool Program::variable_in_symbol_list_check(string variable)
 void Program::global_list_in_proc_check()
 {
 	// check later
-	return;
+	for(auto it = called_procedures.begin();it!= called_procedures.end();it++){
+		CHECK_INPUT((*it)->is_proc_defined(),"Called procedure is not defined",NO_FILE_LINE);
+	}
 }
 
 

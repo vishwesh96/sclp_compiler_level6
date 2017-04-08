@@ -986,6 +986,7 @@ Code_For_Ast & Return_Ast::compile()
 			Move_IC_Stmt * stmt = new Move_IC_Stmt(ic_operator,lhs_addr,reg);
 			Return_IC_Stmt * ret_stmt = new Return_IC_Stmt(ret_inst,fname);
 			list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
+			reg->reset_use_for_expr_result();
 			if (lhs_stmt.get_icode_list().empty() == false)
 				ic_list = lhs_stmt.get_icode_list();
 			ic_list.push_back(stmt);	
@@ -1004,6 +1005,7 @@ Code_For_Ast & Return_Ast::compile()
 		Move_IC_Stmt * stmt = new Move_IC_Stmt(ic_operator,lhs_addr,reg);
 		Return_IC_Stmt * ret_stmt = new Return_IC_Stmt(ret_inst,fname);
 		list<Icode_Stmt *> & ic_list = * new list<Icode_Stmt *>;
+		reg->reset_use_for_expr_result();
 		if (lhs_stmt.get_icode_list().empty() == false)
 			ic_list = lhs_stmt.get_icode_list();
 		ic_list.push_back(stmt);	
@@ -1030,9 +1032,9 @@ Code_For_Ast & Function_Call_Ast::compile()
 	int offset = 0;
 	string stack = "sp";
 	CHECK_INVARIANT(formal_entries.size()==(*actual_params).size(),"Actual and formal parameter count do not match");
-	auto it = actual_params->begin();
-	auto fit = formal_entries.begin();
-	for(; it!= actual_params->end(); it++, fit++){			//TODO6
+	auto it = actual_params->rbegin();
+	auto fit = formal_entries.rbegin();
+	for(; it!= actual_params->rend(); it++, fit++){			//TODO6
 
 		Code_For_Ast & param_stmt = (*it)->compile();
 		Register_Descriptor * param_load_register = param_stmt.get_reg();

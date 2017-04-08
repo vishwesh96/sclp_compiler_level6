@@ -98,6 +98,8 @@ program:
 
 		// CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");	//TODO6
 		program_object.global_list_in_proc_check();
+		string main = "main";
+		CHECK_INPUT(program_object.variable_in_proc_map_check(main),"Procedure main is not defined",NO_FILE_LINE);
 	}
 	}
 ;
@@ -468,7 +470,9 @@ optional_actual_parameters_list:
 	{
 	if(NOT_ONLY_PARSE)
 	{
-		$$ = NULL;
+		std::list<Ast *> *actual_parameters_list = new std::list<Ast*>();
+		$$=actual_parameters_list;
+;
 	}
 	}
 |
@@ -1183,13 +1187,11 @@ function_call:
 		if(proc==NULL)
 			valid = false;
 		if(valid){
-			CHECK_INPUT(proc->is_proc_defined(),"Called procedure is not defined",get_line_number());
-			if(!proc->is_proc_defined())
-				valid = false;	
+			called_procedures.push_back(proc);
 		}
 		if(valid){
 			list<Symbol_Table_Entry *> formal_entries = proc->get_formal_list().get_table();
-			CHECK_INPUT(formal_entries.size()==(*actual_parameters_list).size(),"Actual and formal parameter count do not match",get_line_number());
+			CHECK_INPUT(formal_entries.size()==(*actual_parameters_list).size(),"Actual and formal parameter count do not match",get_line_number());	
 			if(formal_entries.size()!=(*actual_parameters_list).size())
 			valid = false;
 			auto it = (*actual_parameters_list).begin();

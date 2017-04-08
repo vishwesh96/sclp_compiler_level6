@@ -10,7 +10,8 @@ using namespace std;
 class Program;
 
 extern Program program_object;
-extern std::map<int,string> string_map;
+extern map<int,string> string_map;
+extern list<Procedure*> called_procedures;
 
 class Program
 {
