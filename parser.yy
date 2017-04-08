@@ -238,7 +238,7 @@ procedure_definition:
 			"Procedure name cannot be same as global variable", get_line_number());
 
 		Procedure * proc = program_object.get_procedure(proc_name);
-		CHECK_INPUT(proc!=NULL,"Procedure corresponding to the name is not found",get_line_number());	
+		CHECK_INVARIANT(proc!=NULL,"Procedure corresponding to the name is not found");	
 
 		current_procedure = proc;			//set current procedure
 		if(current_procedure!=NULL){
@@ -1048,7 +1048,6 @@ arith_expression:
 	{
 		Ast * lhs = $1;
 		Ast * rhs = $3;
-		if(lhs == NULL)
 		Ast * ast = new Plus_Ast(lhs,rhs,get_line_number());
 		ast->check_ast();		
 		$$ = ast;
