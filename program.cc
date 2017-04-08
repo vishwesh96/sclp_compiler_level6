@@ -73,6 +73,7 @@ void Program::print()
 
 	//TODO6
 	// check at last
+	
 	command_options.create_ast_buffer();
   	for(auto it = proc_map.begin();it!=proc_map.end();it++)
 	{

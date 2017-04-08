@@ -99,7 +99,7 @@ program:
 		// CHECK_INVARIANT((current_procedure != NULL), "Current procedure cannot be null");	//TODO6
 		program_object.global_list_in_proc_check();
 		string main = "main";
-		CHECK_INPUT(program_object.variable_in_proc_map_check(main),"Procedure main is not defined",NO_FILE_LINE);
+		CHECK_INPUT(program_object.variable_in_proc_map_check(main),"Procedure main is not defined",NO_FILE_LINE);	
 	}
 	}
 ;
@@ -174,11 +174,10 @@ procedure_declaration:
 	{
 		Data_Type d_type = $1;
 		Symbol_Table * st = $4;
-		string * proc_name = $2;
+		string proc_name = *$2;
 
-		CHECK_INVARIANT((proc_name!= NULL), "Procedure name cannot be null");
-
-		Procedure * proc = new Procedure(d_type,*proc_name,get_line_number());
+		// CHECK_INVARIANT((proc_name!= NULL), "Procedure name cannot be null");
+		Procedure * proc = new Procedure(d_type,proc_name,get_line_number());
 		if (st == NULL)
 			st = new Symbol_Table();
 		proc->set_formal_list(*st);			//if no parameters means NULL empty formal symbol table
@@ -347,8 +346,6 @@ variable_declaration_list:
 			CHECK_INVARIANT((decl_stmt != NULL), "Non-terminal declaration statement cannot be null");
 
 			string decl_name = decl_stmt->get_variable_name();
-			CHECK_INPUT ((program_object.variable_in_proc_map_check(decl_name) == false),
-					"Variable name cannot be same as the procedure name", get_line_number());
 
 			if(current_procedure != NULL)
 			{
@@ -644,7 +641,24 @@ statement :
 	{
 	if(NOT_ONLY_PARSE)
 	{
-		$$ = $1;
+		Ast * return_statement = $1;
+		if(current_procedure!=NULL){
+			if(current_procedure->get_return_type()==int_data_type){
+				CHECK_INPUT(return_statement->get_data_type()==int_data_type||return_statement->get_data_type()==void_data_type,"Two or more types of return values",get_line_number()-1);
+			}
+
+			if(current_procedure->get_return_type()==double_data_type){
+				CHECK_INPUT(return_statement->get_data_type()==double_data_type||return_statement->get_data_type()==void_data_type,"Two or more types of return values",get_line_number()-1);
+			}
+			
+			if(current_procedure->get_return_type()==void_data_type){
+				CHECK_INPUT(return_statement->get_data_type()==void_data_type,"Two or more types of return values",get_line_number()-1);
+			}
+			$$ = $1;
+		}
+		else{
+			$$ = NULL;
+		}
 	}
 	}
 |
@@ -1182,12 +1196,16 @@ function_call:
 		CHECK_INVARIANT((fname != NULL), "Function call name cannot be null");
 
 		Procedure * proc = program_object.get_procedure(*fname);
+		if(current_procedure!=NULL){
+					CHECK_INPUT ((current_procedure->variable_in_symbol_list_check(*fname) == false),
+				"Called Procedure name cannot be same as local variable name", get_line_number());
+		}
 		CHECK_INPUT(proc!=NULL,"Procedure corresponding to the name is not found",get_line_number());	
 		bool valid = true;
 		if(proc==NULL)
 			valid = false;
 		if(valid){
-			called_procedures.push_back(proc);
+		called_procedures.push_back(proc);
 		}
 		if(valid){
 			list<Symbol_Table_Entry *> formal_entries = proc->get_formal_list().get_table();

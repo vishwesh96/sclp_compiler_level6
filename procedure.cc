@@ -33,7 +33,10 @@ bool Procedure::is_proc_defined()
 
 void Procedure::check_formal_table(Symbol_Table & table)
 {
-	return;	
+	list<Symbol_Table_Entry *> local_table = table.get_table();
+	for(auto it = local_table.begin(); it!=local_table.end();it++){
+		CHECK_INPUT(!formal_symbol_table.variable_in_formal_list_check((*it)->get_variable_name()),"Formal parameter and local variable name cannot be same",lineno);
+	}
 }
 
 void Procedure::set_formal_list(Symbol_Table & new_list)
@@ -87,8 +90,10 @@ Symbol_Table_Entry & Procedure::get_symbol_table_entry(string variable_name)
 
 void Procedure::print(ostream & file_buffer)
 {
-	if(sequence_ast!=NULL)
-		sequence_ast->print(file_buffer);
+	
+	// if(sequence_ast!=NULL)
+	// 	sequence_ast->print(file_buffer);
+
 }
 
 

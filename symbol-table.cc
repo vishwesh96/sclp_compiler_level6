@@ -36,7 +36,7 @@ void Symbol_Table::operator==(Symbol_Table & formal_list)
 		Data_Type type1 = (*i)->get_data_type();
 		Data_Type type2 = (*j)->get_data_type();
 
-		CHECK_INPUT((type1 == type2), "Return type of one of the parameters of the procedure and its prototype doesn't match", NO_FILE_LINE);
+		CHECK_INPUT((type1 == type2), "Data type of one of the parameters of the procedure and its prototype doesn't match", NO_FILE_LINE);
 
 		string name1 = (*i)->get_variable_name();
 		string name2 = (*j)->get_variable_name();

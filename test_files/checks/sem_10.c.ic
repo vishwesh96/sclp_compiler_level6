@@ -1,0 +1,43 @@
+  Procedure: main
+  Intermediate Code Statements
+	iLoad.d:    	f2 <- 1.00
+	store.d:    	a <- f2
+	iLoad.d:    	f2 <- 2.00
+	store.d:    	b <- f2
+	load.d:    	f2 <- a
+	load.d:    	f4 <- b
+	iLoad:    	v0 <- 0
+	sle.d:    	 flag  <- f2 , f4
+	goto label0
+	iLoad:    	v0 <- 1
+
+label0:    	
+	not:    	v0 <- v0 , 1
+	load.d:    	f2 <- a
+	load.d:    	f4 <- b
+	iLoad:    	t0 <- 0
+	sle.d:    	 flag  <- f2 , f4
+	goto label1
+	iLoad:    	t0 <- 1
+
+label1:    	
+	and:    	t1 <- v0 , t0
+	load.d:    	f2 <- a
+	load.d:    	f4 <- b
+	iLoad:    	v0 <- 0
+	sle.d:    	 flag  <- f2 , f4
+	goto label2
+	iLoad:    	v0 <- 1
+
+label2:    	
+	not:    	v0 <- v0 , 1
+	or:    	t0 <- t1 , v0
+	beq:    	t0 , zero : goto label3
+	iLoad.d:    	f2 <- 1.00
+	store.d:    	a <- f2
+	goto label4
+
+label3:    	
+
+label4:    	
+	return

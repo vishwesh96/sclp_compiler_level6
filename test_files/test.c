@@ -1,17 +1,12 @@
-// int c;
 int main(float a,int b);
-int f();
+int c();
 
 main(float a,int b){
-	int c;
-		c = f();
-		// f();
-		print(c);
-		return 1;
-}
-f(){
+	int d;
+	 = c();
+	print(c);
 	return 1;
 }
-// f(float a,int b){
-// 	return 1;
-// }
+c(){
+	return ;
+}

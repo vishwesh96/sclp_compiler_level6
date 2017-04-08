@@ -13,6 +13,7 @@ void Program::compile()
 
   	for(auto it = proc_map.begin();it!=proc_map.end();it++)
 	{
+		
 		it->second->compile();
 	}
 	print_icode();
